@@ -38,7 +38,7 @@ PHRASES = {
     "center_cannon": ("当头炮！", "炮走到中路"),
     "out_cannon": ("架炮！", "其它出炮"),
     "out_bishop": ("飞象！", "出象/相"),
-    "out_advisor": ("支士！", "出士/仕"),
+    "out_advisor": ("补士！", "出士/仕"),
     "out_pawn": ("进兵！", "第一次走兵/卒"),
     "cross_river": ("过河！", "兵卒过河"),
     "king_move": ("老将出马！", "将帅移动"),
@@ -60,18 +60,19 @@ PHRASES = {
 }
 
 
-def trim(wav: np.ndarray, threshold: float = 0.01, pad: int = 1200) -> np.ndarray:
+def trim(wav: np.ndarray, threshold: float = 0.004, pad: int = 3600) -> np.ndarray:
     idx = np.where(np.abs(wav) > threshold)[0]
     if len(idx) == 0:
         return wav
-    return wav[max(0, idx[0] - pad): min(len(wav), idx[-1] + pad)]
+    # 开头多留一点：ch / sh / j 等清辅音很轻，裁太狠会把“吃”变成“持”
+    return wav[max(0, idx[0] - pad): min(len(wav), idx[-1] + pad // 2)]
 
 
 def finish(wav: np.ndarray) -> np.ndarray:
     wav = trim(wav.astype(np.float32))
     peak = float(np.max(np.abs(wav))) or 1.0
     wav = wav / peak * 0.89
-    fade = min(480, len(wav) // 4)
+    fade = min(240, len(wav) // 8)
     if fade > 0:
         wav[:fade] *= np.linspace(0, 1, fade)
         wav[-fade:] *= np.linspace(1, 0, fade)
@@ -89,7 +90,7 @@ def main() -> None:
     report = {}
     for key, (text, note) in PHRASES.items():
         for tag, voice in VOICES.items():
-            chunks = [r.audio.numpy() if hasattr(r.audio, "numpy") else np.asarray(r.audio) for r in pipe(text, voice=voice, speed=1.05)]
+            chunks = [r.audio.numpy() if hasattr(r.audio, "numpy") else np.asarray(r.audio) for r in pipe(text, voice=voice, speed=0.9)]
             wav = finish(np.concatenate(chunks))
             name = f"voice_{key}_{tag}"
             sf.write(out / f"{name}.ogg", wav, SR, format="OGG", subtype="VORBIS")
@@ -101,9 +102,12 @@ def main() -> None:
     try:
         from faster_whisper import WhisperModel
 
-        asr = WhisperModel("small", device="cpu", compute_type="int8")
+        asr = WhisperModel("medium", device="cpu", compute_type="int8")
         for name in report:
-            segments, _ = asr.transcribe(str(out / f"{name}.wav"), language="zh", beam_size=5)
+            segments, _ = asr.transcribe(
+                str(out / f"{name}.wav"), language="zh", beam_size=5,
+                initial_prompt="中国象棋对局语音：将军，绝杀，困毙，吃车，吃马，吃炮，吃象，吃士，吃兵，出车，跳马，当头炮，架炮，飞象，补士，进兵，过河。",
+            )
             report[name]["heard"] = "".join(s.text for s in segments).strip()
     except Exception as e:  # noqa: BLE001
         print("ASR skipped:", e)
