@@ -4,7 +4,7 @@
 
 <h1 align="center">南坡象棋</h1>
 
-<p align="center"><b>专注中国象棋的 Android TV / 平板应用</b><br/>
+<p align="center"><b>专注中国象棋的 Android TV / 平板 / 手机应用</b><br/>
 人机对弈 · 双人同屏 · 杀法残局开局训练 · 棋谱回放 · 无账号、无广告</p>
 
 <p align="center"><img src="docs/screenshots/tv-banner.png" width="560" alt="南坡象棋电视横幅" /></p>
@@ -35,6 +35,10 @@
 | --- | --- |
 | ![题库](docs/screenshots/tv-trainingList.png) | ![做题](docs/screenshots/tv-trainingPlay.png) |
 
+| 平板面对面 | |
+| --- | --- |
+| ![面对面](docs/screenshots/tablet-faceToFace.png) | 平板横放在两人中间：棋盘几乎全屏，红方坐左、黑方坐右，两侧控制条和棋子上的字都朝向各自的棋手。 |
+
 | 残棋定式跟练 | 训练营 |
 | --- | --- |
 | ![残局](docs/screenshots/tv-lessonPlay.png) | ![训练营](docs/screenshots/tv-trainingHub.png) |
@@ -45,6 +49,7 @@
 
 - **人机对弈**：执红或执黑，入门 / 进阶 / 挑战三档难度
 - **双人同屏**：两个人用同一个遥控器或同一台平板轮流走子
+- **面对面（平板）**：平板横放，两人对坐，各自点击走子；认输 / 新局 / 退出在自己一侧，点两次确认
 - 悔棋、提示（棋盘上用箭头标出推荐着法）、换边、认输、新局
 - 将军提示、将死与困毙判定、三次重复与六十回合不吃子判和
 - 每一步自动保存，退出后首页「继续对局」接着下
