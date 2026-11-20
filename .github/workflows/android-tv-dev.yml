@@ -1,9 +1,7 @@
 name: Android TV dev preview
 
-# 开发分支：编译 + 规则单测 + 渲染界面截图（Paparazzi），结果放到 dev-preview 预发布里。
+# 手动运行：编译 + 规则单测 + 渲染界面截图（Paparazzi），结果放到 dev-preview 预发布里。
 on:
-  push:
-    branches: [native-tv]
   workflow_dispatch:
 
 permissions:

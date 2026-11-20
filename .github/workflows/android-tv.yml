@@ -28,6 +28,10 @@ concurrency:
 env:
   # 仓库 .npmrc 指向国内镜像；GitHub 机房直接用官方源更快更稳。
   NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
+  # 公开的发布仓库：安装包与 update.json 放在这里，应用的在线更新从这里读取（源码仓库保持私有）。
+  # 需要本仓库 Secret RELEASE_TOKEN（对发布仓库有 Contents 读写权限的令牌）；没配置时先发布到本仓库。
+  RELEASE_REPO: wxz52155/nanpo-xiangqi
+  HAS_RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN != '' }}
 
 jobs:
   apk:
@@ -71,6 +75,14 @@ jobs:
       - name: Version
         id: version
         run: |
+          # 应用里写死公开发布仓库；实际发布目标取决于是否配置了 RELEASE_TOKEN
+          echo "repo=$RELEASE_REPO" >> "$GITHUB_OUTPUT"
+          if [ "$HAS_RELEASE_TOKEN" = "true" ]; then
+            echo "publish=$RELEASE_REPO" >> "$GITHUB_OUTPUT"
+          else
+            echo "publish=$GITHUB_REPOSITORY" >> "$GITHUB_OUTPUT"
+            echo "::warning::未配置 RELEASE_TOKEN，本次发布到源码仓库；应用内在线更新需要公开发布仓库 $RELEASE_REPO。"
+          fi
           BASE=$(grep -E '^versionBase=' android/version.properties | cut -d= -f2 | tr -d '[:space:]')
           CODE=${{ github.run_number }}
           NAME="${BASE}.${CODE}"
@@ -99,6 +111,9 @@ jobs:
             } >> "$GITHUB_ENV"
             echo "stable=true" >> "$GITHUB_OUTPUT"
             echo "使用 Secrets 中的签名证书"
+          elif [ -f android/keystore/qilian-tv.jks ] && [ -f android/keystore/keystore.properties ]; then
+            echo "stable=true" >> "$GITHUB_OUTPUT"
+            echo "使用仓库内的签名证书 android/keystore/qilian-tv.jks"
           else
             PASS=$(openssl rand -hex 16)
             keytool -genkeypair -keystore "$RUNNER_TEMP/temp.jks" -storetype PKCS12 \
@@ -120,7 +135,8 @@ jobs:
           chmod +x gradlew
           ./gradlew --no-daemon :qilian:testDebugUnitTest --tests 'com.qilian.tv.RulesTest' :app:assembleRelease \
             -PversionCode=${{ steps.version.outputs.code }} \
-            -PversionName=${{ steps.version.outputs.name }}
+            -PversionName=${{ steps.version.outputs.name }} \
+            -PupdateRepo=${{ steps.version.outputs.repo }}
 
       - name: Collect APK
         id: apk
@@ -145,10 +161,25 @@ jobs:
           path: dist-apk/
           retention-days: 30
 
+      - name: Changelog base
+        id: base
+        if: github.event_name == 'push' || inputs.publish
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || github.token }}
+        run: |
+          # 上一个版本对应的源码提交：优先读上一版 update.json 里的 commit，其次用本仓库最新的 v* 标签
+          REPO="${{ steps.version.outputs.publish }}"
+          PREV=$(gh release download -R "$REPO" -p update.json -O - 2>/dev/null | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{try{process.stdout.write(JSON.parse(s).commit||"")}catch{}})' || true)
+          if [ -z "$PREV" ] || ! git cat-file -e "$PREV^{commit}" 2>/dev/null; then
+            PREV=$(git tag --list 'v*' --sort=-v:refname | head -n1)
+          fi
+          echo "prev=$PREV" >> "$GITHUB_OUTPUT"
+          echo "上一版本基准：${PREV:-（无）}"
+
       - name: Release notes
         if: github.event_name == 'push' || inputs.publish
         run: |
-          PREV=$(git tag --list 'v*' --sort=-v:refname | head -n1)
+          PREV="${{ steps.base.outputs.prev }}"
           {
             echo "## 南坡象棋 ${{ steps.version.outputs.tag }}"
             echo
@@ -162,10 +193,10 @@ jobs:
             echo
             echo "### 更新记录"
             if [ -n "$PREV" ]; then
-              git log "$PREV"..HEAD --no-merges --pretty=format:'- %s（`%h`）' | head -n 60
+              git log "$PREV"..HEAD --no-merges --pretty=format:'- %s（`%h`）' | grep -v '\[skip ci\]' | head -n 60
               echo
               echo
-              echo "完整对比：https://github.com/${GITHUB_REPOSITORY}/compare/${PREV}...${{ steps.version.outputs.tag }}"
+              [ "${{ steps.version.outputs.publish }}" = "$GITHUB_REPOSITORY" ] && echo "完整对比：https://github.com/${GITHUB_REPOSITORY}/compare/${PREV}...${{ steps.version.outputs.tag }}"
             else
               echo "- 原生 Android TV 版本"
               git log --no-merges --pretty=format:'- %s（`%h`）' -n 15
@@ -173,22 +204,56 @@ jobs:
             fi
             echo
             echo "### 安装"
+            echo "0. 已安装 2.0.4 及以上版本的，可在应用「设置 → 检查更新」直接在线升级；"
             echo "1. 下载下方的 APK，用 U 盘、局域网传输或「当贝助手」等工具装到电视 / 盒子上；"
             echo "2. 同一签名的新版本可以直接覆盖安装，棋谱和训练进度会保留；"
             echo "3. 遥控器：方向键移动焦点，OK 确认，返回键后退；在页面最左侧按左键展开导航。"
           } > release-notes.md
           cat release-notes.md
 
+      - name: Update manifest
+        if: github.event_name == 'push' || inputs.publish
+        run: |
+          PREV="${{ steps.base.outputs.prev }}"
+          if [ -n "$PREV" ]; then
+            git log "$PREV"..HEAD --no-merges --pretty=format:'%s' | grep -v '\[skip ci\]' | head -n 30 | sed 's/^/• /' > changes.txt || true
+          fi
+          [ -s changes.txt ] || echo "• 常规改进与问题修复" > changes.txt
+          APK="${{ steps.apk.outputs.path }}"
+          NAME=$(basename "$APK")
+          TAG="${{ steps.version.outputs.tag }}"
+          REPO="${{ steps.version.outputs.publish }}"
+          node -e '
+            const fs = require("fs");
+            const [apk, name, tag, repo, code, ver] = process.argv.slice(1);
+            const sha = fs.readFileSync(apk + ".sha256", "utf8").split(/\s+/)[0];
+            const now = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 16).replace("T", " ");
+            fs.writeFileSync("dist-apk/update.json", JSON.stringify({
+              versionCode: Number(code),
+              versionName: ver,
+              notes: fs.readFileSync("changes.txt", "utf8").trim(),
+              apkUrl: `https://github.com/${repo}/releases/download/${tag}/${name}`,
+              sha256: sha,
+              size: fs.statSync(apk).size,
+              publishedAt: now,
+              commit: process.env.GITHUB_SHA,
+            }, null, 2));
+          ' "$APK" "$NAME" "$TAG" "$REPO" "${{ steps.version.outputs.code }}" "${{ steps.version.outputs.name }}"
+          cat dist-apk/update.json
+
       - name: Publish release
         if: github.event_name == 'push' || inputs.publish
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || github.token }}
         run: |
           TAG="${{ steps.version.outputs.tag }}"
-          gh release create "$TAG" \
+          TARGET=()
+          PUBLISH="${{ steps.version.outputs.publish }}"
+          if [ "$PUBLISH" != "$GITHUB_REPOSITORY" ]; then TARGET=(-R "$PUBLISH"); else TARGET=(--target "$GITHUB_SHA"); fi
+          gh release create "$TAG" "${TARGET[@]}" \
             "${{ steps.apk.outputs.path }}" \
             "${{ steps.apk.outputs.path }}.sha256" \
+            dist-apk/update.json \
             --title "南坡象棋 $TAG" \
             --notes-file release-notes.md \
-            --target "$GITHUB_SHA" \
             --latest

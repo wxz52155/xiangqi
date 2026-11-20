@@ -139,6 +139,25 @@ class ScreenshotTest {
     }
 
     @Test
+    fun updateDialog() = shot {
+        val d = LocalDeps.current
+        val scope = rememberCoroutineScope()
+        androidx.compose.runtime.remember {
+            d.updates.preview(
+                com.qilian.tv.data.Updater.Release(
+                    versionCode = 9, versionName = "2.0.9",
+                    notes = "• 新增在线更新：设置里可检查新版本，一键下载安装\n• 安装包下载走 gh-proxy 加速\n• 平板支持点击走子\n• 修复训练营收藏偶尔不刷新",
+                    apkUrl = "https://github.com/wxz52155/nanpo-xiangqi/releases/download/v2.0.9/NanpoXiangqi-v2.0.9.apk",
+                    sha256 = "", size = 2_600_000, publishedAt = "2026-11-21 10:00",
+                ),
+            )
+        }
+        val nav = rememberNavController()
+        WithDrawer(nav, Routes.SETTINGS) { SettingsScreen(nav) }
+        com.qilian.tv.ui.UpdateDialog(d.updates, scope)
+    }
+
+    @Test
     fun settings() = shot {
         val nav = rememberNavController()
         WithDrawer(nav, Routes.SETTINGS) { SettingsScreen(nav) }

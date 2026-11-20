@@ -8,7 +8,3 @@ captures/
 .kotlin/
 # 训练内容由 pnpm export:tv-content 生成
 app/src/main/assets/content/
-# 签名证书不进仓库
-keystore/*.jks
-keystore/*.keystore
-keystore/keystore.properties

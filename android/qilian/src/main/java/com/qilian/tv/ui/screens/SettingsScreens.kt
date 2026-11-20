@@ -50,6 +50,8 @@ fun SettingsScreen(nav: NavHostController) {
     val online by produceState<Boolean?>(initialValue = null) { value = OnlineAi.health() }
     val first = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { first.requestFocus() } }
+    val deps = LocalDeps.current
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
 
     Row(Modifier.fillMaxSize().padding(start = 48.dp, end = 48.dp, top = 34.dp)) {
         LazyColumn(Modifier.weight(1f), contentPadding = PaddingValues(bottom = 40.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
@@ -92,7 +94,8 @@ fun SettingsScreen(nav: NavHostController) {
             }
         }
         Spacer(Modifier.width(30.dp))
-        Column(Modifier.width(300.dp).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        Column(Modifier.width(300.dp).fillMaxHeight().verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            com.qilian.tv.ui.VersionPanel(deps.updates, scope)
             Panel(Modifier.fillMaxWidth()) {
                 Text("AI 引擎", style = Type.Label.copy(color = Palette.Gold))
                 Spacer(Modifier.height(10.dp))
@@ -164,7 +167,7 @@ fun AboutScreen(nav: NavHostController) {
                 Spacer(Modifier.width(18.dp))
                 Column {
                     Text("南坡象棋", style = Type.Headline.copy(fontSize = 32.sp))
-                    Text("中国象棋 · 电视与平板", style = Type.Body)
+                    Text("中国象棋 · 电视与平板 · v${LocalDeps.current.updates.installed.versionName}", style = Type.Body)
                 }
             }
             Spacer(Modifier.height(24.dp))

@@ -44,7 +44,9 @@ import com.qilian.tv.ui.screens.TrainingHubScreen
 import com.qilian.tv.ui.screens.TrainingListScreen
 import com.qilian.tv.ui.screens.TrainingPlayScreen
 
-class AppDeps(val context: Context, val store: Store, val sounds: Sounds?)
+class AppDeps(val context: Context, val store: Store, val sounds: Sounds?) {
+    val updates = UpdateController(context)
+}
 
 val LocalDeps = staticCompositionLocalOf<AppDeps> { error("AppDeps missing") }
 
@@ -83,8 +85,14 @@ fun QilianApp(deps: AppDeps) {
     QilianTheme {
         CompositionLocalProvider(LocalDeps provides deps) {
             val nav = rememberNavController()
+            val appScope = androidx.compose.runtime.rememberCoroutineScope()
+            androidx.compose.runtime.LaunchedEffect(Unit) {
+                kotlinx.coroutines.delay(2500)
+                deps.updates.autoCheck(appScope)
+            }
             AppBackground {
                 AppNavHost(nav)
+                UpdateDialog(deps.updates, appScope)
             }
         }
     }

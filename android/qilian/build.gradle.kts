@@ -11,6 +11,9 @@ android {
 
     defaultConfig {
         minSdk = 21
+        // 在线更新读取哪个仓库的 Release（CI 传入 -PupdateRepo=owner/repo）
+        val updateRepo = (project.findProperty("updateRepo") as String?)?.takeIf { it.isNotBlank() } ?: "wxz52155/xiangqi"
+        buildConfigField("String", "UPDATE_REPO", "\"$updateRepo\"")
     }
 
     compileOptions {
@@ -28,6 +31,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     testOptions {
         unitTests.isReturnDefaultValues = true
@@ -44,6 +48,7 @@ dependencies {
     api("androidx.compose.material:material-icons-core")
     api("androidx.tv:tv-material:1.0.0")
     api("androidx.activity:activity-compose:1.9.3")
+    api("androidx.core:core-ktx:1.13.1")
     api("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
     api("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
     api("androidx.navigation:navigation-compose:2.8.4")
