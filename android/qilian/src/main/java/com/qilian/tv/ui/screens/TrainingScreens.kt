@@ -358,7 +358,7 @@ private fun StatusBox(session: TrainingSession, item: TrainingItem) {
         session.autoPlaying -> "演示中…"
         session.busy -> "对方应手中…"
         session.comment != null -> session.comment!!
-        item is Tactic -> "找出一步绝杀：方向键选子，OK 确认落点。"
+        item is Tactic -> "找出一步绝杀：先选子，再选落点。"
         else -> "按主线走子：轮到你时选子落子，对方会自动应手。"
     }
     Column(

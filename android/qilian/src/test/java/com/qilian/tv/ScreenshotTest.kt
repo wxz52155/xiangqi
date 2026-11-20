@@ -21,15 +21,12 @@ import com.qilian.tv.ui.QilianTheme
 import com.qilian.tv.ui.Routes
 import com.qilian.tv.ui.WithDrawer
 import com.qilian.tv.ui.screens.GameLayout
-import com.qilian.tv.ui.screens.GamesHubScreen
 import com.qilian.tv.ui.screens.HomeScreen
 import com.qilian.tv.ui.screens.SettingsScreen
 import com.qilian.tv.ui.screens.SetupScreen
 import com.qilian.tv.ui.screens.TrainingHubScreen
 import com.qilian.tv.ui.screens.TrainingListScreen
 import com.qilian.tv.ui.screens.TrainingPlayContent
-import com.qilian.tv.ui.screens.GomokuScreen
-import com.qilian.tv.ui.screens.JungleScreen
 import org.junit.Rule
 import org.junit.Test
 
@@ -140,18 +137,6 @@ class ScreenshotTest {
             TrainingPlayContent(rememberNavController(), TrainingKind.ENDGAME, item, session)
         }
     }
-
-    @Test
-    fun games() = shot {
-        val nav = rememberNavController()
-        WithDrawer(nav, Routes.GAMES) { GamesHubScreen(nav) }
-    }
-
-    @Test
-    fun gomoku() = shot { GomokuScreen(rememberNavController()) }
-
-    @Test
-    fun jungle() = shot { JungleScreen(rememberNavController()) }
 
     @Test
     fun settings() = shot {

@@ -192,16 +192,21 @@ fun ReviewScreen(nav: NavHostController, id: String) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text("◀  第 $index / ${plies.size} 手  ▶", style = Type.Title.copy(fontSize = 18.sp))
                     Spacer(Modifier.weight(1f))
-                    Text(if (playing) "播放中 · OK 暂停" else "OK 自动播放", style = Type.Small.copy(color = Palette.GoldSoft))
+                    Text(if (playing) "播放中" else "左右键逐步", style = Type.Small.copy(color = Palette.GoldSoft))
                 }
                 Spacer(Modifier.height(10.dp))
                 ProgressBar(if (plies.isEmpty()) 0f else index.toFloat() / plies.size, Modifier.fillMaxWidth())
             }
             MoveListPanel(plies, Modifier.weight(1f), highlight = index - 1)
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                TvButton("开局", { playing = false; index = 0 }, Modifier.weight(1f), seal = "始", compact = true)
-                TvButton("终局", { playing = false; index = plies.size }, Modifier.weight(1f), seal = "终", compact = true)
-                TvButton("删除", { confirmDelete = true }, Modifier.weight(1f), seal = "删", danger = true, compact = true)
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                TvButton("开局", { playing = false; index = 0 }, Modifier.weight(1f), compact = true)
+                TvButton("上一步", { playing = false; if (index > 0) index-- }, Modifier.weight(1f), compact = true)
+                TvButton("下一步", { playing = false; if (index < plies.size) index++ }, Modifier.weight(1f), compact = true)
+                TvButton("终局", { playing = false; index = plies.size }, Modifier.weight(1f), compact = true)
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                TvButton(if (playing) "暂停" else "自动播放", { playing = !playing }, Modifier.weight(1f), seal = "播", compact = true)
+                TvButton("删除这局", { confirmDelete = true }, Modifier.weight(1f), seal = "删", danger = true, compact = true)
             }
             TvButton(
                 "从这一步接着下（${if (record.mode == "human") "双人" else "人机"}）",

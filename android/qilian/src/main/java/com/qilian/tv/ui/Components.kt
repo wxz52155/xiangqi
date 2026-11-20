@@ -326,7 +326,7 @@ fun ConfirmDialog(
                 .padding(28.dp),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Seal("棋", size = 34.dp)
+                Seal("南", size = 34.dp)
                 Spacer(Modifier.width(12.dp))
                 Text(title, style = Type.Headline.copy(fontSize = 22.sp))
             }

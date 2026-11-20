@@ -34,13 +34,9 @@ import com.qilian.tv.data.Store
 import com.qilian.tv.data.TrainingKind
 import com.qilian.tv.game.Sounds
 import com.qilian.tv.ui.screens.AboutScreen
-import com.qilian.tv.ui.screens.Connect4Screen
 import com.qilian.tv.ui.screens.GameScreen
-import com.qilian.tv.ui.screens.GamesHubScreen
-import com.qilian.tv.ui.screens.GomokuScreen
 import com.qilian.tv.ui.screens.HistoryScreen
 import com.qilian.tv.ui.screens.HomeScreen
-import com.qilian.tv.ui.screens.JungleScreen
 import com.qilian.tv.ui.screens.ReviewScreen
 import com.qilian.tv.ui.screens.SettingsScreen
 import com.qilian.tv.ui.screens.SetupScreen
@@ -58,7 +54,6 @@ object Routes {
     const val GAME = "game"
     const val TRAIN = "train"
     const val HISTORY = "history"
-    const val GAMES = "games"
     const val SETTINGS = "settings"
     const val ABOUT = "about"
 
@@ -80,7 +75,6 @@ private val NAV_ITEMS = listOf(
     NavItem(Routes.SETUP, "弈", "人机对弈"),
     NavItem(Routes.TRAIN, "练", "训练营"),
     NavItem(Routes.HISTORY, "谱", "我的棋谱"),
-    NavItem(Routes.GAMES, "戏", "其它棋类"),
     NavItem(Routes.SETTINGS, "设", "设置"),
 )
 
@@ -109,7 +103,7 @@ internal fun WithDrawer(nav: NavHostController, current: String, content: @Compo
                     .padding(horizontal = 12.dp, vertical = 20.dp),
                 horizontalAlignment = Alignment.Start,
             ) {
-                Seal("棋", size = 44.dp, modifier = Modifier.padding(start = 6.dp, bottom = 18.dp))
+                Seal("南", size = 44.dp, modifier = Modifier.padding(start = 6.dp, bottom = 18.dp))
                 NAV_ITEMS.forEach { item ->
                     val selected = item.route == current
                     NavigationDrawerItem(
@@ -144,7 +138,7 @@ internal fun WithDrawer(nav: NavHostController, current: String, content: @Compo
                 }
                 Spacer(Modifier.weight(1f))
                 if (value == DrawerValue.Open) {
-                    Text("棋练 · 电视版", style = Type.Small, modifier = Modifier.padding(start = 10.dp))
+                    Text("南坡象棋", style = Type.Small, modifier = Modifier.padding(start = 10.dp))
                 }
             }
         },
@@ -160,7 +154,6 @@ private fun AppNavHost(nav: NavHostController) {
         composable(Routes.SETUP) { WithDrawer(nav, Routes.SETUP) { SetupScreen(nav) } }
         composable(Routes.TRAIN) { WithDrawer(nav, Routes.TRAIN) { TrainingHubScreen(nav) } }
         composable(Routes.HISTORY) { WithDrawer(nav, Routes.HISTORY) { HistoryScreen(nav) } }
-        composable(Routes.GAMES) { WithDrawer(nav, Routes.GAMES) { GamesHubScreen(nav) } }
         composable(Routes.SETTINGS) { WithDrawer(nav, Routes.SETTINGS) { SettingsScreen(nav) } }
         composable(Routes.ABOUT) { AboutScreen(nav) }
 
@@ -195,9 +188,6 @@ private fun AppNavHost(nav: NavHostController) {
             )
         }
         composable("review/{id}") { e -> ReviewScreen(nav, e.arguments?.getString("id") ?: "") }
-        composable("gomoku") { GomokuScreen(nav) }
-        composable("connect4") { Connect4Screen(nav) }
-        composable("jungle") { JungleScreen(nav) }
     }
 }
 

@@ -45,7 +45,7 @@ object OnlineAi {
     }
 
     /**
-     * @param game xiangqi / gomoku / connect4 / jungle
+     * @param game 固定为 xiangqi
      * @param fen 象棋局面
      * @param board 网格棋局面（自上而下、自左而右）
      */

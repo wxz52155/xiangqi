@@ -63,7 +63,7 @@ jobs:
         run: |
           mkdir -p preview
           cp build.log shots.log preview/ 2>/dev/null || true
-          cp android/app/build/outputs/apk/debug/*.apk preview/QilianTV-debug.apk 2>/dev/null || true
+          cp android/app/build/outputs/apk/debug/*.apk preview/NanpoXiangqi-debug.apk 2>/dev/null || true
           (cd android/qilian/src/test/snapshots/images 2>/dev/null && zip -q -r "$GITHUB_WORKSPACE/preview/screenshots.zip" .) || true
           (cd android/qilian/build/reports/tests 2>/dev/null && zip -q -r "$GITHUB_WORKSPACE/preview/test-reports.zip" .) || true
           (cd android/qilian/build/test-results 2>/dev/null && zip -q -r "$GITHUB_WORKSPACE/preview/test-results.zip" .) || true

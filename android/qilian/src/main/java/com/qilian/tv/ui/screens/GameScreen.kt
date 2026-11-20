@@ -128,7 +128,7 @@ fun GameLayout(game: XiangqiGame, onExit: () -> Unit, onReview: (String) -> Unit
                     style = Type.Title,
                 )
                 Spacer(Modifier.weight(1f))
-                Text("返回键退出", style = Type.Small)
+                Text("返回键 / 退出按钮离开", style = Type.Small)
             }
             PlayersPanel(game)
             MoveListPanel(game.plies, Modifier.weight(1f))
@@ -238,7 +238,7 @@ private fun StatusLine(game: XiangqiGame) {
         game.finished -> "${game.resultTitle()} · ${game.resultDetail()}"
         game.thinking -> game.thinkingInfo
         game.mode == Mode.HUMAN -> if (game.position.turn == Xq.RED) "轮到红方走" else "轮到黑方走"
-        game.isUserTurn -> if (game.selected != null) "选择落点，OK 确认" else "轮到你走 · 方向键选子，OK 确认"
+        game.isUserTurn -> if (game.selected != null) "选择落点（绿点为可走位置）" else "轮到你走 · 先选子，再选落点"
         else -> "等待 AI"
     }
     val inCheck = !game.finished && Xq.inCheck(game.position.board, game.position.turn)

@@ -132,7 +132,7 @@ jobs:
             exit 1
           fi
           mkdir -p dist-apk
-          OUT="dist-apk/QilianTV-${{ steps.version.outputs.tag }}.apk"
+          OUT="dist-apk/NanpoXiangqi-${{ steps.version.outputs.tag }}.apk"
           cp "$APK" "$OUT"
           (cd dist-apk && sha256sum "$(basename "$OUT")" > "$(basename "$OUT").sha256")
           echo "path=$OUT" >> "$GITHUB_OUTPUT"
@@ -141,7 +141,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: QilianTV-${{ steps.version.outputs.tag }}
+          name: NanpoXiangqi-${{ steps.version.outputs.tag }}
           path: dist-apk/
           retention-days: 30
 
@@ -150,11 +150,11 @@ jobs:
         run: |
           PREV=$(git tag --list 'v*' --sort=-v:refname | head -n1)
           {
-            echo "## 棋练 TV ${{ steps.version.outputs.tag }}"
+            echo "## 南坡象棋 ${{ steps.version.outputs.tag }}"
             echo
             echo "- 构建时间：$(TZ=Asia/Shanghai date '+%Y-%m-%d %H:%M')（北京时间）"
             echo "- 提交：\`${GITHUB_SHA::7}\`"
-            echo "- 安装包：\`QilianTV-${{ steps.version.outputs.tag }}.apk\`（${{ steps.apk.outputs.size }}）"
+            echo "- 安装包：\`NanpoXiangqi-${{ steps.version.outputs.tag }}.apk\`（${{ steps.apk.outputs.size }}）"
             if [ "${{ steps.signing.outputs.stable }}" != "true" ]; then
               echo
               echo "> ⚠️ 本版本使用临时签名证书（仓库未配置签名 Secrets），安装前需先卸载旧版本。"
@@ -188,7 +188,7 @@ jobs:
           gh release create "$TAG" \
             "${{ steps.apk.outputs.path }}" \
             "${{ steps.apk.outputs.path }}.sha256" \
-            --title "棋练 TV $TAG" \
+            --title "南坡象棋 $TAG" \
             --notes-file release-notes.md \
             --target "$GITHUB_SHA" \
             --latest

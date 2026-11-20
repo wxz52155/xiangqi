@@ -9,6 +9,9 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -108,6 +111,28 @@ fun XiangqiBoard(
     fun squareOf(col: Int, row: Int): Int =
         if (flipped) Xq.squareAt(8 - col, row) else Xq.squareAt(col, 9 - row)
 
+    // 触屏（平板）：点哪个交叉点就选哪个，与遥控器 OK 走同一套逻辑
+    val currentOnPoint by rememberUpdatedState(onPoint)
+    val currentFlipped by rememberUpdatedState(flipped)
+    val touchModifier = if (interactive) {
+        Modifier.pointerInput(Unit) {
+            detectTapGestures { tap ->
+                val w = size.width.toFloat()
+                val h = size.height.toFloat()
+                val cell = min(w / 9f, h / 10f)
+                val ox = (w - cell * 9f) / 2f
+                val oy = (h - cell * 10f) / 2f
+                val col = ((tap.x - ox) / cell).toInt()
+                val row = ((tap.y - oy) / cell).toInt()
+                if (col in 0..8 && row in 0..9) {
+                    val sq = if (currentFlipped) Xq.squareAt(8 - col, row) else Xq.squareAt(col, 9 - row)
+                    cursor = sq
+                    currentOnPoint(sq)
+                }
+            }
+        }
+    } else Modifier
+
     val keyModifier = if (interactive) {
         Modifier
             .onKeyEvent { event ->
@@ -130,6 +155,7 @@ fun XiangqiBoard(
     Canvas(
         modifier
             .aspectRatio(9f / 10f)
+            .then(touchModifier)
             .then(keyModifier),
     ) {
         val cell = min(size.width / 9f, size.height / 10f)

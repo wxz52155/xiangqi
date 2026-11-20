@@ -128,19 +128,6 @@ fun HomeScreen(nav: NavHostController) {
             }
         }
 
-        item {
-            Row(Modifier.padding(horizontal = 48.dp)) { SectionHeader("其它棋类", trailing = "人机或双人同屏") }
-            Spacer(Modifier.height(14.dp))
-            LazyRow(
-                contentPadding = PaddingValues(horizontal = 48.dp),
-                horizontalArrangement = Arrangement.spacedBy(18.dp),
-            ) {
-                items(OTHER_GAMES) { game ->
-                    QuickCard(game.title, game.seal, game.body, game.accent, width = 220.dp) { nav.navigate(game.route) }
-                }
-            }
-        }
-
         if (history.isNotEmpty()) {
             item {
                 Row(Modifier.padding(horizontal = 48.dp)) { SectionHeader("最近棋谱", trailing = "共 ${store.history().size} 局") }
@@ -163,14 +150,6 @@ internal fun kindSeal(kind: TrainingKind) = when (kind) {
     TrainingKind.ENDGAME -> "残"
     TrainingKind.OPENING -> "开"
 }
-
-internal data class OtherGame(val title: String, val seal: String, val body: String, val accent: Color, val route: String)
-
-internal val OTHER_GAMES = listOf(
-    OtherGame("五子棋", "五", "15 × 15，横竖斜先连五子", Palette.IvoryMuted, "gomoku"),
-    OtherGame("斗兽棋", "兽", "象狮虎豹，鼠能吃象", Palette.Jade, "jungle"),
-    OtherGame("四子棋", "四", "7 × 6 重力落子，先连四子", Palette.GoldSoft, "connect4"),
-)
 
 @Composable
 private fun Hero(
@@ -227,9 +206,9 @@ private fun Hero(
                 .padding(start = 48.dp, top = 30.dp),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Seal("棋", size = 30.dp)
+                Seal("南", size = 30.dp)
                 Spacer(Modifier.width(10.dp))
-                Text("棋练 · 中国象棋练习场", style = Type.Label.copy(color = Palette.GoldSoft, fontSize = 13.sp))
+                Text("南坡象棋 · 中国象棋", style = Type.Label.copy(color = Palette.GoldSoft, fontSize = 13.sp))
             }
             Spacer(Modifier.height(18.dp))
             Text("静下来，", style = Type.Display)
@@ -239,7 +218,7 @@ private fun Hero(
             }
             Spacer(Modifier.height(10.dp))
             Text(
-                "和 AI 对弈，也能双人同屏；练杀法、拆残局、走开局。棋谱和进度只留在这台电视里。",
+                "和 AI 对弈，也能双人同屏；练杀法、拆残局、走开局。棋谱和进度只留在这台设备里。",
                 style = Type.Body.copy(fontSize = 15.sp),
                 modifier = Modifier.width(470.dp),
             )

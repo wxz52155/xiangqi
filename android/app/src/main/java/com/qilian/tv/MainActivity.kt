@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
                     finish()
                 } else {
                     lastBack = now
-                    Toast.makeText(this@MainActivity, "再按一次返回键退出棋练", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, "再按一次返回键退出南坡象棋", Toast.LENGTH_SHORT).show()
                 }
             }
         })

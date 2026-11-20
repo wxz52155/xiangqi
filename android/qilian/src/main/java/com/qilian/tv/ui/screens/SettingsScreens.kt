@@ -112,12 +112,12 @@ fun SettingsScreen(nav: NavHostController) {
                     Pill("已就绪", color = Palette.Jade)
                 }
                 Spacer(Modifier.height(10.dp))
-                Text("在线 AI 不可用时，象棋和其它棋类都会自动改用本机 AI，不需要联网。", style = Type.Small)
+                Text("在线 AI 不可用时会自动改用本机 AI，不需要联网也能下。", style = Type.Small)
             }
             Panel(Modifier.fillMaxWidth()) {
-                Text("关于棋练", style = Type.Label.copy(color = Palette.Gold))
+                Text("关于南坡象棋", style = Type.Label.copy(color = Palette.Gold))
                 Spacer(Modifier.height(8.dp))
-                Text("一个安静的象棋练习场。不做账号、不做匹配、不做排行榜。", style = Type.Small.copy(color = Palette.IvoryMuted))
+                Text("专注中国象棋：对弈、杀法、残局、开局。不做账号、不做匹配、不做排行榜。", style = Type.Small.copy(color = Palette.IvoryMuted))
                 Spacer(Modifier.height(12.dp))
                 TvButton("关于与许可", { nav.navigate(Routes.ABOUT) }, seal = "关", compact = true)
             }
@@ -160,17 +160,17 @@ fun AboutScreen(nav: NavHostController) {
     Row(Modifier.fillMaxSize().padding(horizontal = 64.dp, vertical = 40.dp)) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Seal("棋", size = 56.dp)
+                Seal("南", size = 56.dp)
                 Spacer(Modifier.width(18.dp))
                 Column {
-                    Text("棋练 · 电视版", style = Type.Headline.copy(fontSize = 32.sp))
-                    Text("中国象棋练习场", style = Type.Body)
+                    Text("南坡象棋", style = Type.Headline.copy(fontSize = 32.sp))
+                    Text("中国象棋 · 电视与平板", style = Type.Body)
                 }
             }
             Spacer(Modifier.height(24.dp))
             AboutBlock(
                 "从哪里来",
-                "本应用是开源项目“棋练”（github.com/chuccp/chess-train）的 Android TV 原生版本：规则核、训练题库（一步杀法、残棋定式、开局）与在线 AI 接口均来自该项目，界面为电视重新设计。",
+                "南坡象棋基于开源项目“棋练”（github.com/chuccp/chess-train）制作：规则核、训练题库（一步杀法、残棋定式、开局）与在线 AI 接口均来自该项目，界面为电视和平板重新设计。",
             )
             AboutBlock(
                 "内容来源",
@@ -178,11 +178,11 @@ fun AboutScreen(nav: NavHostController) {
             )
             AboutBlock(
                 "AI 与隐私",
-                "在线 AI 由 auto-chess 服务计算（象棋为 Pikafish + NNUE），每次只发送当前局面；离线时使用本机 AI。没有账号与统计，棋谱和进度只保存在这台电视里，卸载或清除应用数据会一并删除。",
+                "在线 AI 由 auto-chess 服务计算（象棋为 Pikafish + NNUE），每次只发送当前局面；离线时使用本机 AI。没有账号与统计，棋谱和进度只保存在这台设备里，卸载或清除应用数据会一并删除。",
             )
             AboutBlock(
                 "许可",
-                "应用代码以 GPL-3.0 发布；Pikafish 代码 GPL-3.0，NNUE 权重遵循 Pikafish NNUE-License（免费、非商业）。本版本免费、非商业，不含广告或付费内容。",
+                "南坡象棋与原项目一样以 GPL-3.0 发布源代码；Pikafish 代码 GPL-3.0，NNUE 权重遵循 Pikafish NNUE-License（免费、非商业）。本版本免费、非商业，不含广告或付费内容。",
             )
         }
         Spacer(Modifier.width(40.dp))
