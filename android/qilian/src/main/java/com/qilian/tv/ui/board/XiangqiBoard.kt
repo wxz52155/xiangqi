@@ -227,19 +227,30 @@ fun XiangqiBoard(
             drawArrow(pointOf(marks.hintFrom), pointOf(marks.hintTo), cell)
         }
 
-        // 遥控器光标：四角金色括号
+        // 遥控器光标：亮蓝色方框 + 白色内描边 + 深色外描边，在木色棋盘和红黑棋子上都清楚
         if (interactive && focused) {
             val c = pointOf(cursor)
-            val half = cell * 0.5f
-            val arm = cell * 0.2f
-            val w = cell * 0.07f
-            val glow = Palette.Gold.copy(alpha = 0.18f + 0.12f * pulse)
-            drawRoundRect(glow, Offset(c.x - half, c.y - half), Size(cell, cell), CornerRadius(cell * 0.18f))
-            val color = Palette.Gold
+            val half = cell * 0.52f
+            val arm = cell * 0.26f
+            val w = cell * 0.1f
+            drawRoundRect(
+                Palette.Cursor.copy(alpha = 0.22f + 0.14f * pulse),
+                Offset(c.x - half, c.y - half), Size(half * 2, half * 2), CornerRadius(cell * 0.2f),
+            )
+            drawRoundRect(
+                Palette.Cursor, Offset(c.x - half, c.y - half), Size(half * 2, half * 2), CornerRadius(cell * 0.2f),
+                style = Stroke(cell * 0.035f),
+            )
             for ((sx, sy) in listOf(-1f to -1f, 1f to -1f, -1f to 1f, 1f to 1f)) {
                 val corner = Offset(c.x + sx * half, c.y + sy * half)
-                drawLine(color, corner, Offset(corner.x - sx * arm, corner.y), w, StrokeCap.Round)
-                drawLine(color, corner, Offset(corner.x, corner.y - sy * arm), w, StrokeCap.Round)
+                val h = Offset(corner.x - sx * arm, corner.y)
+                val v = Offset(corner.x, corner.y - sy * arm)
+                drawLine(Color(0xFF06223F), corner, h, w * 1.7f, StrokeCap.Round)
+                drawLine(Color(0xFF06223F), corner, v, w * 1.7f, StrokeCap.Round)
+                drawLine(Palette.Cursor, corner, h, w, StrokeCap.Round)
+                drawLine(Palette.Cursor, corner, v, w, StrokeCap.Round)
+                drawLine(Color.White, corner, Offset(corner.x - sx * arm * 0.55f, corner.y), w * 0.32f, StrokeCap.Round)
+                drawLine(Color.White, corner, Offset(corner.x, corner.y - sy * arm * 0.55f), w * 0.32f, StrokeCap.Round)
             }
         }
     }
@@ -336,7 +347,7 @@ internal fun DrawScope.drawPiece(center: Offset, cell: Float, piece: Int, measur
     drawCircle(Color.Black.copy(alpha = if (lifted) 0.42f else 0.3f), r * 1.02f, center + Offset(0f, cell * (if (lifted) 0.1f else 0.06f)))
     if (lifted) {
         drawCircle(
-            Brush.radialGradient(listOf(Palette.Gold.copy(alpha = 0.7f), Color.Transparent), center, r * 1.45f),
+            Brush.radialGradient(listOf(Palette.CursorGlow.copy(alpha = 0.75f), Color.Transparent), center, r * 1.45f),
             r * 1.45f,
             center,
         )
@@ -349,7 +360,10 @@ internal fun DrawScope.drawPiece(center: Offset, cell: Float, piece: Int, measur
         center,
     )
     drawCircle(ink.copy(alpha = 0.85f), r * 0.76f, center, style = Stroke(r * 0.055f))
-    if (lifted) drawCircle(Palette.Gold, r * 1.02f, center, style = Stroke(r * 0.09f))
+    if (lifted) {
+        drawCircle(Color(0xFF06223F), r * 1.04f, center, style = Stroke(r * 0.16f))
+        drawCircle(Palette.Cursor, r * 1.04f, center, style = Stroke(r * 0.1f))
+    }
     if (measurer != null) {
         val layout = measurer.measure(Xq.glyph(piece), GLYPH_STYLE.copy(color = ink, fontSize = (r * 0.98f).toSp()))
         drawText(layout, topLeft = Offset(center.x - layout.size.width / 2f, center.y - layout.size.height / 2f - r * 0.02f))
@@ -357,13 +371,14 @@ internal fun DrawScope.drawPiece(center: Offset, cell: Float, piece: Int, measur
 }
 
 private fun DrawScope.drawArrow(from: Offset, to: Offset, cell: Float) {
-    val color = Palette.Gold
+    val color = Palette.Hint
     val width = cell * 0.12f
     val angle = atan2(to.y - from.y, to.x - from.x)
     val headLen = cell * 0.36f
     val end = Offset(to.x - kotlin.math.cos(angle) * headLen * 0.8f, to.y - kotlin.math.sin(angle) * headLen * 0.8f)
     drawLine(Color.Black.copy(alpha = 0.25f), from + Offset(0f, cell * 0.04f), end + Offset(0f, cell * 0.04f), width, StrokeCap.Round)
-    drawLine(color.copy(alpha = 0.92f), from, end, width, StrokeCap.Round)
+    drawLine(Color.White, from, end, width * 1.45f, StrokeCap.Round)
+    drawLine(color.copy(alpha = 0.95f), from, end, width, StrokeCap.Round)
     rotate(Math.toDegrees(angle.toDouble()).toFloat(), pivot = to) {
         val path = Path().apply {
             moveTo(to.x, to.y)

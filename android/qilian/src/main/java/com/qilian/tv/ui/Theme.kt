@@ -20,6 +20,10 @@ object Palette {
     val InkCard = Color(0xFF1B3128)
     val InkLine = Color(0x33E8D7B0)
     val Gold = Color(0xFFE2B45A)
+    /** 棋盘上的遥控器光标 / 选中 / 提示：与木色棋盘反差大的亮蓝 */
+    val Cursor = Color(0xFF0A84FF)
+    val CursorGlow = Color(0xFF5AC8FF)
+    val Hint = Color(0xFF7B2FF7)
     val GoldSoft = Color(0xFFF2D59A)
     val GoldDeep = Color(0xFFB8883A)
     val Cinnabar = Color(0xFFCF4232)

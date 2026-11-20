@@ -57,7 +57,7 @@ object Updater {
                 lastError = e
             }
         }
-        throw IllegalStateException("无法获取更新信息：${lastError?.message ?: "网络异常"}")
+        throw IllegalStateException(lastError?.message?.takeIf { it.startsWith("更新服务器") } ?: "无法连接更新服务器，请检查网络")
     }
 
     fun isNewer(release: Release, installed: Installed) = release.versionCode > installed.versionCode
@@ -71,7 +71,8 @@ object Updater {
             setRequestProperty("Cache-Control", "no-cache")
         }
         try {
-            if (conn.responseCode != 200) throw IllegalStateException("HTTP ${conn.responseCode}")
+            if (conn.responseCode == 404) throw IllegalStateException("更新服务器上还没有发布版本")
+            if (conn.responseCode != 200) throw IllegalStateException("更新服务器返回 HTTP ${conn.responseCode}")
             return conn.inputStream.bufferedReader(Charsets.UTF_8).use { it.readText() }
         } finally {
             conn.disconnect()
