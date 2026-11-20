@@ -216,7 +216,8 @@ jobs:
         run: |
           PREV="${{ steps.base.outputs.prev }}"
           if [ -n "$PREV" ]; then
-            git log "$PREV"..HEAD --no-merges --pretty=format:'%s' | grep -v '\[skip ci\]' | head -n 30 | sed 's/^/• /' > changes.txt || true
+            git log "$PREV"..HEAD --no-merges --pretty=format:'%s' | grep -v '\[skip ci\]' | grep -v '^merge' \
+              | sed -E 's/^[a-z]+(\([^)]*\))?!?: *//' | head -n 30 | sed 's/^/• /' > changes.txt || true
           fi
           [ -s changes.txt ] || echo "• 常规改进与问题修复" > changes.txt
           APK="${{ steps.apk.outputs.path }}"
