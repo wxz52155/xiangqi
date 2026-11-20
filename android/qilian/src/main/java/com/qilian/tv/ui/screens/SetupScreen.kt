@@ -42,6 +42,7 @@ import com.qilian.tv.ui.ScreenTitle
 import com.qilian.tv.ui.Seal
 import com.qilian.tv.ui.TvButton
 import com.qilian.tv.ui.Type
+import com.qilian.tv.ui.touchClick
 import com.qilian.tv.ui.board.MiniBoard
 import com.qilian.tv.xiangqi.Xq
 
