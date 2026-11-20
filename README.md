@@ -119,7 +119,7 @@ cd android
 
 - **发布位置**：安装包发布到本仓库的 Releases。
 - **在线更新**：每个 Release 附带 `update.json`（版本号、更新内容、安装包地址、SHA-256）。应用通过 `https://gh-proxy.org/https://github.com/wxz52155/xiangqi/releases/latest/download/update.json` 检测新版本，下载同样走 gh-proxy 加速，失败时回落直连，校验通过后调起系统安装。
-- **签名**：证书在私有源码仓库的 `android/keystore/`，所有版本签名一致。**不要把源码仓库改为公开。** 也可以改用 Secrets（`ANDROID_KEYSTORE_BASE64` 等 4 项，配置后优先使用）。
+- **签名**：证书在 `android/keystore/`，所有版本签名一致、可直接覆盖安装。仓库是公开的，证书也随之公开（已知并接受此风险）；如需更换，可配置 Secrets `ANDROID_KEYSTORE_BASE64` 等 4 项，配置后优先使用。
 
 更多细节见 [docs/ANDROID-TV.md](docs/ANDROID-TV.md)。
 
