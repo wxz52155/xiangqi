@@ -1,0 +1,34 @@
+name: TV voice pack
+
+# 手动运行：用 Kokoro（Apache-2.0）合成象棋语音，打包放到 voices-build 预发布里供检查与入库。
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  voices:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q espeak-ng libsndfile1
+          pip install -q --extra-index-url https://download.pytorch.org/whl/cpu torch
+          pip install -q "kokoro>=0.9.4" "misaki[zh]>=0.9.4" soundfile faster-whisper
+      - name: Generate
+        working-directory: tools/tv-voices
+        run: python generate.py
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd tools/tv-voices/out && zip -q -r ../voices.zip . && cd ..
+          gh release delete voices-build --yes --cleanup-tag 2>/dev/null || true
+          gh release create voices-build voices.zip out/report.json --prerelease --target "$GITHUB_SHA" \
+            --title "voice pack build" --notes "语音包生成结果（自动，非正式版本）"
