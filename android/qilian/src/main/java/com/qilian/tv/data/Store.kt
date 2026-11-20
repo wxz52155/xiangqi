@@ -15,6 +15,8 @@ data class Settings(
     /** 1 入门 2 进阶 3 挑战 */
     val level: Int = 2,
     val sound: Boolean = true,
+    /** 语音播报（将军、吃子、出车……） */
+    val voice: Boolean = true,
     val allowUndo: Boolean = true,
     val showLegalMoves: Boolean = true,
     val onlineAi: Boolean = true,
@@ -91,6 +93,7 @@ class Store private constructor(private val context: Context) {
         userColor = prefs.getInt("userColor", 1),
         level = prefs.getInt("level", 2),
         sound = prefs.getBoolean("sound", true),
+        voice = prefs.getBoolean("voice", true),
         allowUndo = prefs.getBoolean("allowUndo", true),
         showLegalMoves = prefs.getBoolean("showLegalMoves", true),
         onlineAi = prefs.getBoolean("onlineAi", true),
@@ -102,6 +105,7 @@ class Store private constructor(private val context: Context) {
             .putInt("userColor", next.userColor)
             .putInt("level", next.level)
             .putBoolean("sound", next.sound)
+            .putBoolean("voice", next.voice)
             .putBoolean("allowUndo", next.allowUndo)
             .putBoolean("showLegalMoves", next.showLegalMoves)
             .putBoolean("onlineAi", next.onlineAi)

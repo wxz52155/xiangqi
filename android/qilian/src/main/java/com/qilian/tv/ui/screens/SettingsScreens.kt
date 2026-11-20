@@ -88,6 +88,11 @@ fun SettingsScreen(nav: NavHostController) {
                 }
             }
             item {
+                SettingRow("语音播报", "将军、绝杀、吃子、出车、跳马、当头炮……红方男声、黑方女声") {
+                    Segmented(listOf(true to "开", false to "关"), s.voice, { store.updateSettings(s.copy(voice = it)) })
+                }
+            }
+            item {
                 SettingRow("本机数据", "清除棋谱、训练进度、收藏和设置，不可恢复") {
                     TvButton("清除所有数据", { confirmClear = true }, seal = "删", danger = true, compact = true)
                 }

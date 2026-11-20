@@ -100,6 +100,7 @@ class XiangqiGame(
         id = newId()
         startedAt = System.currentTimeMillis()
         save()
+        sounds?.say("start", Xq.RED, 250)
         maybeAi()
     }
 
@@ -161,6 +162,7 @@ class XiangqiGame(
             clearSelection()
             flash("这步不能走")
             sounds?.error()
+            sounds?.say("illegal", position.turn)
         }
     }
 
@@ -177,16 +179,9 @@ class XiangqiGame(
         clearSelection()
         hint = null
         outcome = Xq.outcome(position, hashes)
-        when {
-            outcome !is Outcome.Playing -> sounds?.finish()
-            Xq.inCheck(position.board, position.turn) -> {
-                sounds?.check()
-                flash("将军！")
-            }
-            move.captured != 0 -> sounds?.capture()
-            else -> sounds?.move()
-        }
-        if (finished) finishGame() else save()
+        sounds?.announceMove(move, position, plies.dropLast(1).map { it.move }, outcome)
+        if (!finished && Xq.inCheck(position.board, position.turn)) flash("将军！")
+        if (finished) finishGame(voiceDelay = 1300) else save()
     }
 
     private fun maybeAi() {
@@ -247,6 +242,7 @@ class XiangqiGame(
             selected = m.from
             targets = Xq.legalMoves(position).filter { it.from == m.from }.map { it.to }.toSet()
             flash("提示：${Xq.notation(position, m)}")
+            sounds?.say("hint", position.turn, 0)
         }
     }
 
@@ -273,6 +269,7 @@ class XiangqiGame(
         clearSelection()
         hint = null
         sounds?.move()
+        sounds?.say("undo", if (mode == Mode.AI) userColor else position.turn)
         save()
         maybeAi()
     }
@@ -283,7 +280,8 @@ class XiangqiGame(
         thinking = false
         val loser = if (mode == Mode.AI) userColor else position.turn
         outcome = Outcome.Win(-loser, WinReason.RESIGN)
-        finishGame()
+        sounds?.say("resign", loser, 0)
+        finishGame(voiceDelay = 1200)
     }
 
     /** 面对面模式：指定某一方认输。 */
@@ -293,7 +291,8 @@ class XiangqiGame(
         thinking = false
         outcome = Outcome.Win(-color, WinReason.RESIGN)
         sounds?.finish()
-        finishGame()
+        sounds?.say("resign", color, 0)
+        finishGame(voiceDelay = 1200)
     }
 
     fun flip() {
@@ -344,8 +343,18 @@ class XiangqiGame(
         else -> ""
     }
 
-    private fun finishGame() {
+    private fun finishGame(voiceDelay: Long = 300) {
         val o = outcome
+        // 结束语音：人机按你的胜负，双人按红黑
+        when (o) {
+            is Outcome.Draw -> sounds?.say("draw", Xq.RED, voiceDelay)
+            is Outcome.Win -> if (mode == Mode.AI) {
+                sounds?.say(if (o.winner == userColor) "win" else "lose", userColor, voiceDelay)
+            } else {
+                sounds?.say(if (o.winner == Xq.RED) "red_win" else "black_win", o.winner, voiceDelay)
+            }
+            else -> Unit
+        }
         val result = when (o) {
             is Outcome.Draw -> "draw"
             is Outcome.Win -> if (mode == Mode.AI) (if (o.winner == userColor) "win" else "loss") else (if (o.winner == Xq.RED) "red" else "black")

@@ -104,14 +104,11 @@ class TrainingSession(
     }
 
     private fun push(move: Move) {
+        val history = plies.map { it.move }
         plies = plies + PlyRecord(position, move, Xq.notation(position, move))
         position = Xq.play(position, move)
         clear()
-        when {
-            Xq.inCheck(position.board, position.turn) -> sounds?.check()
-            move.captured != 0 -> sounds?.capture()
-            else -> sounds?.move()
-        }
+        sounds?.announceMove(move, position, history, Xq.outcome(position))
     }
 
     private fun userMove(move: Move) {
@@ -126,6 +123,7 @@ class TrainingSession(
             } else {
                 errors++
                 sounds?.error()
+                sounds?.say("wrong", userColor, 700)
                 flash("这步没有形成杀棋，再想想")
                 busy = true
                 job = scope.launch {
@@ -142,6 +140,7 @@ class TrainingSession(
         if (expected != null && move.ucci != expected.ucci) {
             errors++
             sounds?.error()
+            sounds?.say("wrong", userColor)
             val target = Xq.parseUcci(expected.ucci)
             val m = target?.let { Xq.findLegal(position, it.first, it.second) }
             flash(if (m != null && errors >= 2) "这步不在主线，参考着法：${Xq.notation(position, m)}" else "这步不在主线，再想想")
@@ -203,6 +202,7 @@ class TrainingSession(
         autoPlaying = false
         hintArrow = null
         sounds?.finish()
+        sounds?.say(if (tactic != null) "solved" else "lesson_done", userColor, 1100)
         store.markCompleted(item.kind, item.id)
         comment = when {
             tactic != null -> tactic.explanation
