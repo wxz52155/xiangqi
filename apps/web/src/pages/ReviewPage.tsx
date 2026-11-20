@@ -13,7 +13,6 @@ import { getFinishedGame } from '../lib/storage';
 import { formatDateTime, formatDuration } from '../lib/format';
 import { levelLabel, resultLabel, useGameStore } from '../stores/game';
 import type { FinishedGame, MoveRecord } from '../types';
-import { IS_TV } from '../tv/env';
 
 export function ReviewPage() {
   const { id = '' } = useParams();
@@ -153,7 +152,7 @@ export function ReviewPage() {
               <SkipForward size={18} aria-hidden="true" />
             </button>
           </div>
-          <p className="board-help">{IS_TV ? '回放只读；选中棋谱中的任意一手按 OK 可直接跳转。选「回到对弈」' : '回放只读；点棋谱中的任意一手可直接跳转。点「回到对弈」'}会载入终局结果；人机历史同样按人机规则退棋：机器最后一步退 2 手，人最后一步退 1 手。</p>
+          <p className="board-help">回放只读；点棋谱中的任意一手可直接跳转。点「回到对弈」会载入终局结果；人机历史同样按人机规则退棋：机器最后一步退 2 手，人最后一步退 1 手。</p>
         </section>
 
         <aside className="play-side">

@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { engineApi } from '../engine/api';
-import { IS_TV } from '../tv/env';
 
 export type EnginePhase = 'idle' | 'checking' | 'ready' | 'error';
 export type EngineBackend = 'online' | 'local';
@@ -24,8 +23,6 @@ let bootstrapPromise: Promise<void> | null = null;
 let controllerListenerAttached = false;
 
 async function serviceWorkerControls(): Promise<boolean> {
-  // TV 版资源随 APK 安装在本机，天然离线可用。
-  if (IS_TV) return true;
   if (!('serviceWorker' in navigator)) return false;
   try {
     await Promise.race([

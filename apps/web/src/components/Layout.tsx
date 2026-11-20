@@ -2,8 +2,6 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { BookOpen, GraduationCap, History, Home, Settings, Swords, Users } from 'lucide-react';
 import { EngineBadge } from './EngineBadge';
 import { usePageSeo } from '../lib/seo';
-import { IS_TV } from '../tv/env';
-import { TvKeyLegend } from '../tv/TvShell';
 
 const desktopNav = [
   { to: '/', label: '练习', icon: Home, end: true },
@@ -79,7 +77,6 @@ export function Layout() {
           </nav>
 
           {!hideGlobalEngineStatus && <EngineBadge />}
-          {IS_TV && <TvKeyLegend />}
         </div>
       </header>
 

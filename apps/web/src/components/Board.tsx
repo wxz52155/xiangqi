@@ -8,7 +8,6 @@ import {
   type Piece,
   type Position,
 } from '@qilian/xiangqi';
-import { IS_TV } from '../tv/env';
 
 const PADDING = 50;
 const CELL = 100;
@@ -216,7 +215,7 @@ export function Board({
     return PADDING + row * CELL;
   }
 
-  function moveFocus(square: number, df: number, dr: number): boolean {
+  function moveFocus(square: number, df: number, dr: number): void {
     const file = fileOf(square);
     const rank = rankOf(square);
     const flipped = orientation === 'b';
@@ -225,23 +224,19 @@ export function Board({
     const nextFile = file + displayDf;
     // rank movement is screen-down in display terms; translate it to board rank
     const nextRank = rank + (flipped ? displayDr : -displayDr);
-    if (nextFile < 0 || nextFile > 8 || nextRank < 0 || nextRank > 9) return false;
+    if (nextFile < 0 || nextFile > 8 || nextRank < 0 || nextRank > 9) return;
     const nextSquare = squareAt(nextFile, nextRank);
     setFocusedSquare(nextSquare);
-    // 同步移动焦点：遥控器连按时不会丢键。
-    buttonRefs.current.get(nextSquare)?.focus({ preventScroll: true });
-    return true;
+    requestAnimationFrame(() => buttonRefs.current.get(nextSquare)?.focus());
   }
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLButtonElement>, square: number): void {
     if (event.key === 'ArrowUp' || event.key === 'ArrowDown' || event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-      let moved = false;
-      if (event.key === 'ArrowUp') moved = moveFocus(square, 0, -1);
-      if (event.key === 'ArrowDown') moved = moveFocus(square, 0, 1);
-      if (event.key === 'ArrowLeft') moved = moveFocus(square, -1, 0);
-      if (event.key === 'ArrowRight') moved = moveFocus(square, 1, 0);
-      // 走到棋盘边缘时不拦截，让遥控器焦点可以移出棋盘，去到旁边的按钮。
-      if (moved || !IS_TV) event.preventDefault();
+      event.preventDefault();
+      if (event.key === 'ArrowUp') moveFocus(square, 0, -1);
+      if (event.key === 'ArrowDown') moveFocus(square, 0, 1);
+      if (event.key === 'ArrowLeft') moveFocus(square, -1, 0);
+      if (event.key === 'ArrowRight') moveFocus(square, 1, 0);
       return;
     }
   }

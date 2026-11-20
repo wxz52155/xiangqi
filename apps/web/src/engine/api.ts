@@ -3,7 +3,6 @@
 import { moveToUcci, parseFen, parseUcciMove, START_FEN } from '@qilian/xiangqi';
 import { chooseFallbackXiangqiMove } from '../lib/trainingOpponent';
 import { elephantEye } from './eleeye';
-import { appFetch } from '../tv/nativeFetch';
 const API_BASE = ((import.meta.env.VITE_ENGINE_API_BASE as string | undefined) ??
   'https://home.usercao.com/auto-chess/api/v1'
 ).replace(/\/+$/, '');
@@ -122,7 +121,7 @@ class EngineApi {
   }
 
   async health(): Promise<{ version: string; games: number }> {
-    const res = await appFetch(`${API_BASE}/health`);
+    const res = await fetch(`${API_BASE}/health`);
     const body = (await res.json().catch(() => null)) as
       | { ok: boolean; data?: { version?: string; games?: number }; error?: { message?: string } }
       | null;
@@ -193,7 +192,7 @@ class EngineApi {
       controller.abort();
     }, timeLimitMs + 1_000);
     try {
-      const res = await appFetch(`${API_BASE}/move/stream`, {
+      const res = await fetch(`${API_BASE}/move/stream`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' },
         signal: controller.signal,

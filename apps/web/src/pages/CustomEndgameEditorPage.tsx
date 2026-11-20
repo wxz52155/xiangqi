@@ -7,7 +7,7 @@ import {
 } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { createPortal } from 'react-dom';
-import { ArrowLeft, Check, Copy, Crown, QrCode, Save, Trash2, X } from 'lucide-react';
+import { ArrowLeft, Check, Copy, Crown, Save, X } from 'lucide-react';
 import {
   PIECE_GLYPHS,
   fileOf,
@@ -21,7 +21,6 @@ import {
 import { Board } from '../components/Board';
 import { Dialog } from '../components/Dialog';
 import { copyText } from '../lib/clipboard';
-import { IS_TV } from '../tv/env';
 import {
   createKingsOnlyBoard,
   formatCustomFen,
@@ -175,29 +174,6 @@ export function CustomEndgameEditorPage() {
   }
 
   function handlePoint(square: number) {
-    if (IS_TV) {
-      // 遥控器不能拖拽：OK 选中棋子 → 再按空位移动过去；对已选中的棋子再按 OK 即移除。
-      const piece = position.board[square];
-      if (selectedSquare !== null && selectedSquare === square) {
-        eraseAt(square);
-        showToast('已移除这枚棋子');
-        return;
-      }
-      if (piece) {
-        setSelectedSquare(square);
-        setActionError(null);
-        return;
-      }
-      if (selectedSquare !== null) {
-        const moving = position.board[selectedSquare];
-        if (moving) movePiece(selectedSquare, square, moving);
-        setSelectedSquare(null);
-        return;
-      }
-      if (brush) placeAt(square, brush);
-      else showToast('先在右侧选一枚棋子，再到棋盘上按 OK 落子');
-      return;
-    }
     if (position.board[square]) {
       setSelectedSquare((current) => (current === square ? null : square));
       return;
@@ -394,11 +370,7 @@ export function CustomEndgameEditorPage() {
           {editId ? '编辑残局' : '新建残局'}
         </div>
         <h1>摆一局残局</h1>
-        <p>
-          {IS_TV
-            ? '右侧选棋子后在棋盘上按 OK 落子；按 OK 选中棋子，再按空位移动，对选中的棋子再按一次 OK 即移除。'
-            : '选好棋子后点棋盘落子，或直接拖到棋盘上；单击棋子可移除，拖出棋盘也会删除。'}
-        </p>
+        <p>选好棋子后点棋盘落子，或直接拖到棋盘上；单击棋子可移除，拖出棋盘也会删除。</p>
       </div>
 
       <div className="endgame-editor-layout">
@@ -421,13 +393,13 @@ export function CustomEndgameEditorPage() {
               className="btn btn-ghost btn-small"
               onClick={() => void copyFen()}
             >
-              {IS_TV ? <QrCode size={14} aria-hidden="true" /> : copied ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
-              {IS_TV ? '扫码分享棋盘' : copied ? '已复制' : '复制棋盘'}
+              {copied ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}
+              {copied ? '已复制' : '复制棋盘'}
             </button>
           </div>
           <div className="board-frame" onPointerDown={handleBoardPointerDown}>
-            <Board position={displayPosition} orientation="r" interactive onPoint={handlePoint} selected={IS_TV ? selectedSquare : null} />
-            {selectedPoint && !IS_TV && (
+            <Board position={displayPosition} orientation="r" interactive onPoint={handlePoint} />
+            {selectedPoint && (
               <button
                 type="button"
                 className="endgame-remove-piece"
@@ -448,32 +420,6 @@ export function CustomEndgameEditorPage() {
             <span className="field-label">棋子</span>
             {palette}
           </div>
-
-          {IS_TV && (
-            <div className="field tv-editor-selection">
-              <span className="field-label">选中的棋子</span>
-              <div className="tv-editor-selection-row">
-                <span className="tv-editor-selection-text">
-                  {selectedSquare !== null && position.board[selectedSquare]
-                    ? `${position.board[selectedSquare]!.color === 'r' ? '红方' : '黑方'}${PIECE_LABELS[position.board[selectedSquare]!.color][position.board[selectedSquare]!.type]} · 去空位按 OK 移动`
-                    : brush
-                      ? `落子：${brush.color === 'r' ? '红方' : '黑方'}${PIECE_LABELS[brush.color][brush.type]}`
-                      : '还没有选择'}
-                </span>
-                <button
-                  type="button"
-                  className="btn btn-ghost btn-small"
-                  disabled={selectedSquare === null}
-                  onClick={() => {
-                    if (selectedSquare !== null) eraseAt(selectedSquare);
-                  }}
-                >
-                  <Trash2 size={14} aria-hidden="true" />
-                  移除
-                </button>
-              </div>
-            </div>
-          )}
 
           <div className="field">
             <span className="field-label">谁先走</span>
@@ -518,13 +464,6 @@ export function CustomEndgameEditorPage() {
             <p className="form-error" role="alert">
               {actionError}
             </p>
-          )}
-
-          {IS_TV && (
-            <button type="button" className="btn btn-ghost btn-small tv-editor-share" onClick={() => void copyFen()}>
-              <QrCode size={14} aria-hidden="true" />
-              扫码分享棋盘
-            </button>
           )}
 
           <div className="endgame-editor-actions">

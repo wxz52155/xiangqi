@@ -56,8 +56,8 @@ jobs:
       - name: Unit tests
         run: pnpm test
 
-      - name: Build TV web bundle
-        run: pnpm build:tv
+      - name: Export training content
+        run: pnpm export:tv-content
 
       - name: Setup JDK 17
         uses: actions/setup-java@v4
@@ -118,7 +118,7 @@ jobs:
         working-directory: android
         run: |
           chmod +x gradlew
-          ./gradlew --no-daemon assembleRelease \
+          ./gradlew --no-daemon :qilian:testDebugUnitTest --tests 'com.qilian.tv.RulesTest' :app:assembleRelease \
             -PversionCode=${{ steps.version.outputs.code }} \
             -PversionName=${{ steps.version.outputs.name }}
 
@@ -167,7 +167,7 @@ jobs:
               echo
               echo "完整对比：https://github.com/${GITHUB_REPOSITORY}/compare/${PREV}...${{ steps.version.outputs.tag }}"
             else
-              echo "- 首个 Android TV 版本：遥控器方向键导航、电视大屏布局、内置离线网页包与本地象棋引擎"
+              echo "- 原生 Android TV 版本"
               git log --no-merges --pretty=format:'- %s（`%h`）' -n 15
               echo
             fi

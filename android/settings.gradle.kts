@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "QilianTV"
-include(":app")
+include(":app", ":qilian")

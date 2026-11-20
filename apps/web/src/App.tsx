@@ -22,8 +22,6 @@ import { AboutPage } from './pages/AboutPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { useEngineStore } from './stores/engine';
 import { useGameStore } from './stores/game';
-import { IS_TV } from './tv/env';
-import { TvShell } from './tv/TvShell';
 
 function ScrollToTop() {
   const location = useLocation();
@@ -57,7 +55,6 @@ export default function App() {
   return (
     <>
       <ScrollToTop />
-      {IS_TV && <TvShell />}
       <Routes>
         <Route element={<Layout />}>
           <Route index element={<HomePage />} />

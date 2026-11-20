@@ -1,0 +1,79 @@
+name: Android TV dev preview
+
+# 开发分支：编译 + 规则单测 + 渲染界面截图（Paparazzi），结果放到 dev-preview 预发布里。
+on:
+  push:
+    branches: [native-tv]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-tv-dev
+  cancel-in-progress: true
+
+env:
+  NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --registry=https://registry.npmjs.org/
+
+      - name: Export training content
+        run: pnpm export:tv-content
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Compile + rules tests
+        id: compile
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon :qilian:testDebugUnitTest --tests 'com.qilian.tv.RulesTest' :app:assembleDebug 2>&1 | tee ../build.log
+
+      - name: Record screenshots
+        if: always() && steps.compile.outcome == 'success'
+        continue-on-error: true
+        working-directory: android
+        run: ./gradlew --no-daemon :qilian:recordPaparazziDebug --tests 'com.qilian.tv.ScreenshotTest' 2>&1 | tee ../shots.log
+
+      - name: Package preview
+        if: always()
+        run: |
+          mkdir -p preview
+          cp build.log shots.log preview/ 2>/dev/null || true
+          cp android/app/build/outputs/apk/debug/*.apk preview/QilianTV-debug.apk 2>/dev/null || true
+          (cd android/qilian/src/test/snapshots/images 2>/dev/null && zip -q -r "$GITHUB_WORKSPACE/preview/screenshots.zip" .) || true
+          (cd android/qilian/build/reports/tests 2>/dev/null && zip -q -r "$GITHUB_WORKSPACE/preview/test-reports.zip" .) || true
+          (cd android/qilian/build/test-results 2>/dev/null && zip -q -r "$GITHUB_WORKSPACE/preview/test-results.zip" .) || true
+          ls -la preview
+
+      - name: Publish dev-preview
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete dev-preview --yes --cleanup-tag 2>/dev/null || true
+          gh release create dev-preview preview/* --prerelease --target "$GITHUB_SHA" \
+            --title "dev preview ${GITHUB_SHA::7}" --notes "开发预览（自动生成，非正式版本）"

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "pnpm --filter @qilian/web dev",
     "build": "pnpm --filter @qilian/web build",
-    "build:tv": "node tools/build-tv.mjs",
+    "export:tv-content": "vite-node tools/export-tv-content.ts",
     "preview": "pnpm --filter @qilian/web preview",
     "typecheck": "pnpm --filter @qilian/web typecheck",
     "test": "vitest run",
