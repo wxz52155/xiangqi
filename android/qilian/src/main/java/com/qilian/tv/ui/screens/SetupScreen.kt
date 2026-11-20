@@ -62,8 +62,9 @@ fun SetupScreen(nav: NavHostController) {
             Text("对手", style = Type.Label)
             Spacer(Modifier.height(10.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                ChoiceCard("人机对弈", "和 AI 下，有提示与悔棋", "机", mode == "ai", Modifier.focusRequester(first)) { mode = "ai" }
-                ChoiceCard("双人同屏", "两个人轮流用遥控器", "双", mode == "human") { mode = "human" }
+                ChoiceCard("人机对弈", "有提示与悔棋", "机", mode == "ai", Modifier.focusRequester(first), width = 166.dp) { mode = "ai" }
+                ChoiceCard("双人同屏", "两人轮流走子", "双", mode == "human", width = 166.dp) { mode = "human" }
+                ChoiceCard("面对面", "平板横放对坐", "对", mode == "face", width = 166.dp, sealColor = Palette.Jade) { mode = "face" }
             }
             Spacer(Modifier.height(20.dp))
             Text(if (mode == "ai") "执子" else "先手", style = Type.Label)
@@ -98,12 +99,12 @@ fun SetupScreen(nav: NavHostController) {
             MiniBoard(Xq.initial().board, Modifier.fillMaxWidth(), flipped = mode == "ai" && color == -1)
             Spacer(Modifier.height(16.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Avatar(if (color == 1 || mode == "human") "帅" else "将", red = color == 1 || mode == "human", size = 38.dp)
+                Avatar(if (color == 1 || mode != "ai") "帅" else "将", red = color == 1 || mode != "ai", size = 38.dp)
                 Spacer(Modifier.width(10.dp))
                 Column {
-                    Text(if (mode == "human") "红方 · 先走" else "你 · ${if (color == 1) "执红" else "执黑"}", style = Type.BodyStrong)
+                    Text(if (mode != "ai") "红方 · 先走" else "你 · ${if (color == 1) "执红" else "执黑"}", style = Type.BodyStrong)
                     Text(
-                        if (mode == "human") "黑方由另一位玩家操作" else "AI · ${com.qilian.tv.data.levelLabel(level)}",
+                        if (mode == "face") "红方坐左侧、黑方坐右侧，棋子字各朝自己" else if (mode == "human") "黑方由另一位玩家操作" else "AI · ${com.qilian.tv.data.levelLabel(level)}",
                         style = Type.Small,
                     )
                 }
@@ -134,7 +135,7 @@ fun ChoiceCard(
     Surface(
         onClick = onClick,
         enabled = enabled,
-        modifier = modifier.width(width).height(78.dp),
+        modifier = modifier.touchClick(enabled, onClick).width(width).height(78.dp),
         shape = ClickableSurfaceDefaults.shape(shape),
         scale = ClickableSurfaceDefaults.scale(focusedScale = 1.05f),
         colors = ClickableSurfaceDefaults.colors(

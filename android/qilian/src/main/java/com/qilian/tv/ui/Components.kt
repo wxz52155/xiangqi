@@ -112,7 +112,7 @@ fun FocusCard(
     Surface(
         onClick = onClick,
         enabled = enabled,
-        modifier = modifier,
+        modifier = modifier.touchClick(enabled, onClick),
         shape = ClickableSurfaceDefaults.shape(shape),
         scale = ClickableSurfaceDefaults.scale(focusedScale = focusedScale),
         colors = ClickableSurfaceDefaults.colors(
@@ -159,7 +159,7 @@ fun TvButton(
     Surface(
         onClick = onClick,
         enabled = enabled,
-        modifier = modifier,
+        modifier = modifier.touchClick(enabled, onClick),
         shape = ClickableSurfaceDefaults.shape(shape),
         scale = ClickableSurfaceDefaults.scale(focusedScale = 1.05f),
         colors = ClickableSurfaceDefaults.colors(
@@ -221,6 +221,7 @@ fun <T> Segmented(
             Surface(
                 onClick = { onSelect(value) },
                 enabled = enabled,
+                modifier = Modifier.touchClick(enabled) { onSelect(value) },
                 shape = ClickableSurfaceDefaults.shape(shape),
                 scale = ClickableSurfaceDefaults.scale(focusedScale = 1.06f),
                 colors = ClickableSurfaceDefaults.colors(

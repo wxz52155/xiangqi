@@ -164,7 +164,7 @@ fun ReviewScreen(nav: NavHostController, id: String) {
                 Seal("谱", size = 30.dp)
                 Spacer(Modifier.width(10.dp))
                 Column {
-                    Text(if (record.mode == "human") "双人同屏" else "人机 · ${levelLabel(record.level)}", style = Type.Title)
+                    Text(when (record.mode) { "human" -> "双人同屏"; "face" -> "面对面"; else -> "人机 · ${levelLabel(record.level)}" }, style = Type.Title)
                     Text("${formatDate(record.endedAt)} · ${record.resultText.ifBlank { "未完成" }}", style = Type.Small)
                 }
             }
@@ -209,7 +209,7 @@ fun ReviewScreen(nav: NavHostController, id: String) {
                 TvButton("删除这局", { confirmDelete = true }, Modifier.weight(1f), seal = "删", danger = true, compact = true)
             }
             TvButton(
-                "从这一步接着下（${if (record.mode == "human") "双人" else "人机"}）",
+                "从这一步接着下（${when (record.mode) { "human" -> "双人"; "face" -> "面对面"; else -> "人机" }}）",
                 {
                     val fen = Xq.toFen(position)
                     nav.navigate(Routes.gameFromFen(record.mode, if (record.mode == "ai") record.userColor else 1, record.level, fen))

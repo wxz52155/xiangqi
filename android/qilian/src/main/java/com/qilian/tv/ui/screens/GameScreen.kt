@@ -70,14 +70,24 @@ fun GameScreen(nav: NavHostController, mode: String, color: Int, level: Int, res
     LaunchedEffect(Unit) {
         val saved = if (resume) deps.store.currentGame() else null
         if (saved == null || !game.resume(saved)) {
-            game.start(if (mode == "human") Mode.HUMAN else Mode.AI, color, level, fen?.takeIf { it.isNotBlank() } ?: Xq.START_FEN)
+            game.start(
+                if (mode == "human" || mode == "face") Mode.HUMAN else Mode.AI,
+                color,
+                level,
+                fen?.takeIf { it.isNotBlank() } ?: Xq.START_FEN,
+                faceToFace = mode == "face",
+            )
         }
     }
-    GameLayout(
-        game = game,
-        onExit = { nav.popBackStack() },
-        onReview = { id -> nav.navigate(Routes.review(id)) },
-    )
+    if (game.faceToFace) {
+        FaceToFaceLayout(game, onExit = { nav.popBackStack() })
+    } else {
+        GameLayout(
+            game = game,
+            onExit = { nav.popBackStack() },
+            onReview = { id -> nav.navigate(Routes.review(id)) },
+        )
+    }
 }
 
 @Composable

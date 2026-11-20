@@ -52,7 +52,7 @@ open class ScreenshotTest {
         paparazzi.snapshot {
             QilianTheme {
                 CompositionLocalProvider(LocalDeps provides d) {
-                    AppBackground { content() }
+                    com.qilian.tv.ui.AdaptiveScale { AppBackground { content() } }
                 }
             }
         }
@@ -96,6 +96,23 @@ open class ScreenshotTest {
             }
         }
         GameLayout(game, onExit = {}, onReview = {})
+    }
+
+    @Test
+    fun faceToFace() = shot {
+        val scope = rememberCoroutineScope()
+        val d = LocalDeps.current
+        val game = androidx.compose.runtime.remember {
+            XiangqiGame(scope, d.store, null).apply {
+                start(Mode.HUMAN, 1, 2, faceToFace = true)
+                for (ucci in listOf("h2e2", "h9g7", "h0g2", "i9h9", "b2c2")) {
+                    val (f, t) = com.qilian.tv.xiangqi.Xq.parseUcci(ucci)!!
+                    onPoint(f); onPoint(t)
+                }
+                onPoint(com.qilian.tv.xiangqi.Xq.parseUcci("b9c7")!!.first)
+            }
+        }
+        com.qilian.tv.ui.screens.FaceToFaceLayout(game, onExit = {})
     }
 
     @Test

@@ -108,6 +108,11 @@ fun HomeScreen(nav: NavHostController) {
                     }
                 }
                 item {
+                    QuickCard("面对面", "对", "平板横放，两人对坐下棋", Palette.Jade) {
+                        nav.navigate(Routes.game("face", 1, settings.level))
+                    }
+                }
+                item {
                     QuickCard("自选执子", "选", "执红或执黑、选择难度", Palette.IvoryMuted) { nav.navigate(Routes.SETUP) }
                 }
             }
@@ -338,7 +343,7 @@ internal fun RecordCard(record: GameRecord, onClick: () -> Unit) {
                     },
                 )
                 Spacer(Modifier.height(8.dp))
-                Text(if (record.mode == "human") "双人同屏" else "人机 · ${com.qilian.tv.data.levelLabel(record.level)}", style = Type.CardTitle)
+                Text(when (record.mode) { "human" -> "双人同屏"; "face" -> "面对面"; else -> "人机 · ${com.qilian.tv.data.levelLabel(record.level)}" }, style = Type.CardTitle)
                 Spacer(Modifier.height(4.dp))
                 Text("${record.moves.size} 手 · ${if (record.userColor == 1) "执红" else "执黑"}", style = Type.Small)
                 Spacer(Modifier.weight(1f))

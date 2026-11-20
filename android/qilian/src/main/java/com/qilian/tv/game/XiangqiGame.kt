@@ -34,6 +34,8 @@ class XiangqiGame(
     private val sounds: Sounds?,
 ) {
     var mode by mutableStateOf(Mode.AI); private set
+    /** 平板面对面模式（双人，红左黑右）。 */
+    var faceToFace by mutableStateOf(false); private set
     var userColor by mutableStateOf(Xq.RED); private set
     var level by mutableStateOf(2); private set
     var startFen by mutableStateOf(Xq.START_FEN); private set
@@ -78,9 +80,10 @@ class XiangqiGame(
         )
     }
 
-    fun start(mode: Mode, userColor: Int, level: Int, fen: String = Xq.START_FEN) {
+    fun start(mode: Mode, userColor: Int, level: Int, fen: String = Xq.START_FEN, faceToFace: Boolean = this.faceToFace) {
         aiJob?.cancel()
         this.mode = mode
+        this.faceToFace = faceToFace && mode == Mode.HUMAN
         this.userColor = userColor
         this.level = level
         startFen = fen
@@ -93,7 +96,7 @@ class XiangqiGame(
         outcome = Outcome.Playing
         thinking = false
         hintsUsed = 0
-        flipped = mode == Mode.AI && userColor == Xq.BLACK
+        flipped = this.mode == Mode.AI && userColor == Xq.BLACK
         id = newId()
         startedAt = System.currentTimeMillis()
         save()
@@ -102,7 +105,8 @@ class XiangqiGame(
 
     /** 从存档继续。 */
     fun resume(record: GameRecord): Boolean = runCatching {
-        mode = if (record.mode == "human") Mode.HUMAN else Mode.AI
+        mode = if (record.mode == "human" || record.mode == "face") Mode.HUMAN else Mode.AI
+        faceToFace = record.mode == "face"
         userColor = record.userColor
         level = record.level
         startFen = record.startFen
@@ -282,6 +286,16 @@ class XiangqiGame(
         finishGame()
     }
 
+    /** 面对面模式：指定某一方认输。 */
+    fun resignSide(color: Int) {
+        if (finished) return
+        aiJob?.cancel()
+        thinking = false
+        outcome = Outcome.Win(-color, WinReason.RESIGN)
+        sounds?.finish()
+        finishGame()
+    }
+
     fun flip() {
         flipped = !flipped
     }
@@ -346,7 +360,7 @@ class XiangqiGame(
         startFen = startFen,
         moves = plies.map { it.move.ucci },
         notations = plies.map { it.notation },
-        mode = if (mode == Mode.HUMAN) "human" else "ai",
+        mode = if (faceToFace) "face" else if (mode == Mode.HUMAN) "human" else "ai",
         userColor = userColor,
         level = level,
         result = result,

@@ -80,8 +80,31 @@ private val NAV_ITEMS = listOf(
     NavItem(Routes.SETTINGS, "设", "设置"),
 )
 
+/**
+ * 界面按电视的 960×540dp 设计。手机、平板、4K 电视上统一按屏幕大小等比缩放：
+ * 显示密度 = min(屏宽像素 / 960, 屏高像素 / 540)，保证整套布局完整放下、比例一致。
+ */
+@Composable
+fun AdaptiveScale(content: @Composable () -> Unit) {
+    androidx.compose.foundation.layout.BoxWithConstraints(Modifier.fillMaxSize()) {
+        val wPx = constraints.maxWidth.toFloat()
+        val hPx = constraints.maxHeight.toFloat()
+        val target = if (wPx > 0f && hPx > 0f) minOf(wPx / 960f, hPx / 540f) else androidx.compose.ui.platform.LocalDensity.current.density
+        androidx.compose.runtime.CompositionLocalProvider(
+            androidx.compose.ui.platform.LocalDensity provides androidx.compose.ui.unit.Density(target, fontScale = 1f),
+        ) {
+            content()
+        }
+    }
+}
+
 @Composable
 fun QilianApp(deps: AppDeps) {
+    AdaptiveScale { QilianAppContent(deps) }
+}
+
+@Composable
+private fun QilianAppContent(deps: AppDeps) {
     QilianTheme {
         CompositionLocalProvider(LocalDeps provides deps) {
             val nav = rememberNavController()
@@ -139,7 +162,16 @@ internal fun WithDrawer(nav: NavHostController, current: String, content: @Compo
                             selectedContentColor = Palette.GoldSoft,
                             contentColor = Palette.IvoryMuted,
                         ),
-                        modifier = Modifier.padding(vertical = 3.dp),
+                        modifier = Modifier
+                            .padding(vertical = 3.dp)
+                            .touchClick {
+                                if (!selected) {
+                                    nav.navigate(item.route) {
+                                        popUpTo(Routes.HOME) { saveState = false }
+                                        launchSingleTop = true
+                                    }
+                                }
+                            },
                     ) {
                         Text(item.label, style = Type.BodyStrong.copy(fontSize = 16.sp, color = androidx.compose.ui.graphics.Color.Unspecified))
                     }

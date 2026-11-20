@@ -78,6 +78,8 @@ fun XiangqiBoard(
     interactive: Boolean = true,
     focusRequester: FocusRequester = remember { FocusRequester() },
     initialCursor: Int? = null,
+    /** 面对面模式：黑方棋子的字与“汉界”倒过来，朝向坐在对面的人。 */
+    faceToFace: Boolean = false,
     onPoint: (Int) -> Unit = {},
 ) {
     val measurer = rememberTextMeasurer(cacheSize = 48)
@@ -169,7 +171,7 @@ fun XiangqiBoard(
             return point(c, r)
         }
 
-        drawBoardBase(origin, boardW, boardH, cell, measurer, flipped)
+        drawBoardBase(origin, boardW, boardH, cell, measurer, flipped, faceToFace = faceToFace)
 
         // 上一步：起点淡环，终点柔光
         marks.lastFrom?.let { sq ->
@@ -201,7 +203,7 @@ fun XiangqiBoard(
             if (piece == 0) continue
             if (animating && sq == marks.lastTo) continue
             val lifted = sq == marks.selected
-            drawPiece(pointOf(sq), cell, piece, measurer, lifted)
+            drawPiece(pointOf(sq), cell, piece, measurer, lifted, upsideDown = faceToFace && piece < 0)
         }
         if (animating) {
             val from = pointOf(marks.lastFrom!!)
@@ -209,7 +211,7 @@ fun XiangqiBoard(
             val t = moveAnim.value
             val p = Offset(from.x + (to.x - from.x) * t, from.y + (to.y - from.y) * t)
             val piece = board[marks.lastTo!!]
-            if (piece != 0) drawPiece(p, cell, piece, measurer, lifted = true)
+            if (piece != 0) drawPiece(p, cell, piece, measurer, lifted = true, upsideDown = faceToFace && piece < 0)
         }
 
         // 可走位置
@@ -267,6 +269,7 @@ internal fun DrawScope.drawBoardBase(
     measurer: TextMeasurer?,
     flipped: Boolean,
     simple: Boolean = false,
+    faceToFace: Boolean = false,
 ) {
     val corner = CornerRadius(cell * 0.28f)
     // 投影
@@ -335,12 +338,25 @@ internal fun DrawScope.drawBoardBase(
         val riverY = top + 4.5f * cell
         for ((text, cx) in listOf(leftText to (left + 2f * cell), rightText to (left + 6f * cell))) {
             val layout = measurer.measure(text, style)
-            drawText(layout, topLeft = Offset(cx - layout.size.width / 2f, riverY - layout.size.height / 2f))
+            val topLeft = Offset(cx - layout.size.width / 2f, riverY - layout.size.height / 2f)
+            // 面对面：靠黑方一侧（屏幕上方那半）的字倒过来。楚河在红方一侧，汉界在黑方一侧。
+            if (faceToFace && text == "汉界") {
+                rotate(180f, pivot = Offset(cx, riverY)) { drawText(layout, topLeft = topLeft) }
+            } else {
+                drawText(layout, topLeft = topLeft)
+            }
         }
     }
 }
 
-internal fun DrawScope.drawPiece(center: Offset, cell: Float, piece: Int, measurer: TextMeasurer?, lifted: Boolean = false) {
+internal fun DrawScope.drawPiece(
+    center: Offset,
+    cell: Float,
+    piece: Int,
+    measurer: TextMeasurer?,
+    lifted: Boolean = false,
+    upsideDown: Boolean = false,
+) {
     val r = cell * (if (lifted) 0.47f else 0.44f)
     val red = piece > 0
     val ink = if (red) Palette.PieceRed else Palette.PieceBlack
@@ -367,7 +383,12 @@ internal fun DrawScope.drawPiece(center: Offset, cell: Float, piece: Int, measur
     }
     if (measurer != null) {
         val layout = measurer.measure(Xq.glyph(piece), GLYPH_STYLE.copy(color = ink, fontSize = (r * 0.98f).toSp()))
-        drawText(layout, topLeft = Offset(center.x - layout.size.width / 2f, center.y - layout.size.height / 2f - r * 0.02f))
+        val topLeft = Offset(center.x - layout.size.width / 2f, center.y - layout.size.height / 2f - r * 0.02f)
+        if (upsideDown) {
+            rotate(180f, pivot = center) { drawText(layout, topLeft = topLeft) }
+        } else {
+            drawText(layout, topLeft = topLeft)
+        }
     }
 }
 
