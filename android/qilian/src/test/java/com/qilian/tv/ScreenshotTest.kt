@@ -31,20 +31,19 @@ import org.junit.Rule
 import org.junit.Test
 
 /** 1080p 电视（xhdpi → 960×540dp）上渲染主要界面，用于检查布局。 */
-class ScreenshotTest {
-    @get:Rule
-    val paparazzi = Paparazzi(
-        deviceConfig = DeviceConfig.PIXEL_5.copy(
-            screenWidth = 1920,
-            screenHeight = 1080,
-            xdpi = 320,
-            ydpi = 320,
-            density = Density.XHIGH,
-            orientation = ScreenOrientation.LANDSCAPE,
-            softButtons = false,
-        ),
-        maxPercentDifference = 100.0,
+open class ScreenshotTest {
+    open val device = DeviceConfig.PIXEL_5.copy(
+        screenWidth = 1920,
+        screenHeight = 1080,
+        xdpi = 320,
+        ydpi = 320,
+        density = Density.XHIGH,
+        orientation = ScreenOrientation.LANDSCAPE,
+        softButtons = false,
     )
+
+    @get:Rule
+    val paparazzi by lazy { Paparazzi(deviceConfig = device, maxPercentDifference = 100.0) }
 
     private fun deps() = AppDeps(paparazzi.context, Store.get(paparazzi.context), null)
 

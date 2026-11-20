@@ -44,6 +44,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.dp
 import com.qilian.tv.ui.Palette
 import com.qilian.tv.ui.SerifFamily
 import com.qilian.tv.xiangqi.Xq
@@ -410,7 +411,7 @@ fun MiniBoard(board: IntArray, modifier: Modifier = Modifier, flipped: Boolean =
         for (sq in 0 until Xq.SIZE) {
             val p = board[sq]
             if (p == 0) continue
-            drawPiece(pointOf(sq), cell, p, if (cell > 14f) measurer else null)
+            drawPiece(pointOf(sq), cell, p, if (cell > 7.dp.toPx()) measurer else null)
         }
     }
 }

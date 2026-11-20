@@ -54,7 +54,7 @@ jobs:
         if: always() && steps.compile.outcome == 'success'
         continue-on-error: true
         working-directory: android
-        run: ./gradlew --no-daemon :qilian:recordPaparazziDebug --tests 'com.qilian.tv.ScreenshotTest' 2>&1 | tee ../shots.log
+        run: ./gradlew --no-daemon :qilian:recordPaparazziDebug --tests 'com.qilian.tv.ScreenshotTest*' 2>&1 | tee ../shots.log
 
       - name: Package preview
         if: always()
