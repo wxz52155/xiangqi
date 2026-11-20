@@ -83,7 +83,7 @@ fun HomeScreen(nav: NavHostController) {
         }
 
         item {
-            Row(Modifier.padding(horizontal = 48.dp)) { SectionHeader("快速开局", trailing = "按 OK 立即开始") }
+            Row(Modifier.padding(horizontal = 48.dp)) { SectionHeader("快速开局", trailing = "点选或按 OK 立即开始") }
             Spacer(Modifier.height(14.dp))
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 48.dp),
