@@ -22,9 +22,9 @@ class ScreenshotTestPhone : ScreenshotTest() {
     override val device = DeviceConfig.PIXEL_5.copy(
         screenWidth = 2400,
         screenHeight = 1080,
-        xdpi = 400,
-        ydpi = 400,
-        density = Density.DPI_420,
+        xdpi = 480,
+        ydpi = 480,
+        density = Density.XXHIGH,
         orientation = ScreenOrientation.LANDSCAPE,
         softButtons = false,
     )
