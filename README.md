@@ -13,13 +13,15 @@
 
 ## 下载安装
 
-到本仓库 **[Releases](../../releases)** 下载最新的 `NanpoXiangqi-v*.apk`：
+安装包发布在公开仓库 **[wxz52155/nanpo-xiangqi](https://github.com/wxz52155/nanpo-xiangqi/releases)**（国内可用加速地址：`https://gh-proxy.org/` + GitHub 下载链接）：
 
 1. 用 U 盘、局域网传输或「当贝助手」等工具把 APK 装到电视 / 盒子 / 平板上；
 2. 安装后在电视桌面（Android TV / Google TV 的应用行）或平板桌面找到「南坡象棋」；
-3. 新版本可直接覆盖安装，棋谱和训练进度会保留。
+3. 以后有新版本时应用会自动弹出更新内容，点“下载并安装”即可（也可以在 设置 → 版本 → 检查更新）；棋谱和训练进度会保留。
 
-每次推送到 `main`，GitHub Actions 会自动跑测试、构建签名 APK 并发布到 Releases，发布说明里附带这次的更新记录。
+> 2.0.3 及更早的版本用的是临时签名，需要先卸载一次再安装 2.0.4 及以后的版本；之后都可以直接覆盖安装。
+
+每次推送到 `main`，GitHub Actions 会自动跑测试、构建签名 APK 并发布，发布说明与应用内弹窗都会附带这次的更新记录。
 
 ## 看一眼
 
@@ -77,6 +79,7 @@
 | 选择 | 方向键移动焦点，OK 确认 | 直接点 |
 | 走子 | 方向键移动棋盘上的金色光标，OK 选子，再 OK 落子；光标走到边缘再按一次即移到旁边的按钮 | 点棋子，再点落点 |
 | 返回 | 返回键（有选中的棋子时先取消选择）；首页连按两次退出 | 系统返回手势 / 返回键 |
+| 更新 | 启动时自动检测，发现新版本弹出更新内容；设置 → 检查更新 | 同左 |
 | 导航 | 在页面最左侧按左键展开导航抽屉 | 点左侧图标 |
 
 ## 技术说明
@@ -110,20 +113,15 @@ cd android
 ./gradlew :app:assembleRelease    # 需要 JDK 17 与 Android SDK 35
 ```
 
-### 自动发布与签名
+### 自动发布、在线更新与签名
 
 `.github/workflows/android-tv.yml`：推送 `main` → 单元测试 → 构建签名 APK → 发布 Release（版本号 `2.0.<运行编号>`）。
 
-签名证书放在仓库 Settings → Secrets and variables → Actions：
+- **发布位置**：源码仓库保持私有，安装包发布到公开仓库 `wxz52155/nanpo-xiangqi`（工作流里的 `RELEASE_REPO`），需要本仓库 Secret `RELEASE_TOKEN`（只对发布仓库有 Contents 读写权限的令牌）。未配置时先发布到源码仓库。
+- **在线更新**：每个 Release 附带 `update.json`（版本号、更新内容、安装包地址、SHA-256）。应用通过 `https://gh-proxy.org/https://github.com/wxz52155/nanpo-xiangqi/releases/latest/download/update.json` 检测新版本，下载同样走 gh-proxy 加速，失败时回落直连，校验通过后调起系统安装。
+- **签名**：证书在私有源码仓库的 `android/keystore/`，所有版本签名一致。**不要把源码仓库改为公开。** 也可以改用 Secrets（`ANDROID_KEYSTORE_BASE64` 等 4 项，配置后优先使用）。
 
-| Secret | 内容 |
-| --- | --- |
-| `ANDROID_KEYSTORE_BASE64` | 证书文件 base64（`base64 -w0 qilian-tv.jks`） |
-| `ANDROID_KEYSTORE_PASSWORD` | 证书密码 |
-| `ANDROID_KEY_ALIAS` | 密钥别名 |
-| `ANDROID_KEY_PASSWORD` | 密钥密码 |
-
-未配置时会用临时证书继续发布，但新旧版本签名不同、需要先卸载再安装。更多细节见 [docs/ANDROID-TV.md](docs/ANDROID-TV.md)。
+更多细节见 [docs/ANDROID-TV.md](docs/ANDROID-TV.md)。
 
 ## 内容来源与许可
 
