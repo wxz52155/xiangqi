@@ -28,10 +28,7 @@ concurrency:
 env:
   # 仓库 .npmrc 指向国内镜像；GitHub 机房直接用官方源更快更稳。
   NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
-  # 公开的发布仓库：安装包与 update.json 放在这里，应用的在线更新从这里读取（源码仓库保持私有）。
-  # 需要本仓库 Secret RELEASE_TOKEN（对发布仓库有 Contents 读写权限的令牌）；没配置时先发布到本仓库。
-  RELEASE_REPO: wxz52155/nanpo-xiangqi
-  HAS_RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN != '' }}
+  # 安装包与 update.json 发布到本仓库（公开仓库）的 Releases，应用的在线更新从这里读取。
 
 jobs:
   apk:
@@ -75,14 +72,8 @@ jobs:
       - name: Version
         id: version
         run: |
-          # 应用里写死公开发布仓库；实际发布目标取决于是否配置了 RELEASE_TOKEN
-          echo "repo=$RELEASE_REPO" >> "$GITHUB_OUTPUT"
-          if [ "$HAS_RELEASE_TOKEN" = "true" ]; then
-            echo "publish=$RELEASE_REPO" >> "$GITHUB_OUTPUT"
-          else
-            echo "publish=$GITHUB_REPOSITORY" >> "$GITHUB_OUTPUT"
-            echo "::warning::未配置 RELEASE_TOKEN，本次发布到源码仓库；应用内在线更新需要公开发布仓库 $RELEASE_REPO。"
-          fi
+          echo "repo=$GITHUB_REPOSITORY" >> "$GITHUB_OUTPUT"
+          echo "publish=$GITHUB_REPOSITORY" >> "$GITHUB_OUTPUT"
           BASE=$(grep -E '^versionBase=' android/version.properties | cut -d= -f2 | tr -d '[:space:]')
           CODE=${{ github.run_number }}
           NAME="${BASE}.${CODE}"
@@ -165,7 +156,7 @@ jobs:
         id: base
         if: github.event_name == 'push' || inputs.publish
         env:
-          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           # 上一个版本对应的源码提交：优先读上一版 update.json 里的 commit，其次用本仓库最新的 v* 标签
           REPO="${{ steps.version.outputs.publish }}"
@@ -245,7 +236,7 @@ jobs:
       - name: Publish release
         if: github.event_name == 'push' || inputs.publish
         env:
-          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || github.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           TAG="${{ steps.version.outputs.tag }}"
           TARGET=()

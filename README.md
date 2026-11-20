@@ -13,13 +13,13 @@
 
 ## 下载安装
 
-安装包发布在公开仓库 **[wxz52155/nanpo-xiangqi](https://github.com/wxz52155/nanpo-xiangqi/releases)**（国内可用加速地址：`https://gh-proxy.org/` + GitHub 下载链接）：
+到本仓库 **[Releases](https://github.com/wxz52155/xiangqi/releases/latest)** 下载最新的 `NanpoXiangqi-v*.apk`（国内可在下载链接前加 `https://gh-proxy.org/` 加速）：
 
 1. 用 U 盘、局域网传输或「当贝助手」等工具把 APK 装到电视 / 盒子 / 平板上；
 2. 安装后在电视桌面（Android TV / Google TV 的应用行）或平板桌面找到「南坡象棋」；
 3. 以后有新版本时应用会自动弹出更新内容，点“下载并安装”即可（也可以在 设置 → 版本 → 检查更新）；棋谱和训练进度会保留。
 
-> 2.0.3 及更早的版本用的是临时签名，需要先卸载一次再安装 2.0.4 及以后的版本；之后都可以直接覆盖安装。
+> 2.0.3 及更早的版本用的是临时签名，需要先卸载一次再安装新版本；2.0.4、2.0.5 的在线更新地址指向了一个没有启用的仓库，请手动安装一次 2.0.6 或更新的版本。之后都可以在应用内直接升级。
 
 每次推送到 `main`，GitHub Actions 会自动跑测试、构建签名 APK 并发布，发布说明与应用内弹窗都会附带这次的更新记录。
 
@@ -117,8 +117,8 @@ cd android
 
 `.github/workflows/android-tv.yml`：推送 `main` → 单元测试 → 构建签名 APK → 发布 Release（版本号 `2.0.<运行编号>`）。
 
-- **发布位置**：源码仓库保持私有，安装包发布到公开仓库 `wxz52155/nanpo-xiangqi`（工作流里的 `RELEASE_REPO`），需要本仓库 Secret `RELEASE_TOKEN`（只对发布仓库有 Contents 读写权限的令牌）。未配置时先发布到源码仓库。
-- **在线更新**：每个 Release 附带 `update.json`（版本号、更新内容、安装包地址、SHA-256）。应用通过 `https://gh-proxy.org/https://github.com/wxz52155/nanpo-xiangqi/releases/latest/download/update.json` 检测新版本，下载同样走 gh-proxy 加速，失败时回落直连，校验通过后调起系统安装。
+- **发布位置**：安装包发布到本仓库的 Releases。
+- **在线更新**：每个 Release 附带 `update.json`（版本号、更新内容、安装包地址、SHA-256）。应用通过 `https://gh-proxy.org/https://github.com/wxz52155/xiangqi/releases/latest/download/update.json` 检测新版本，下载同样走 gh-proxy 加速，失败时回落直连，校验通过后调起系统安装。
 - **签名**：证书在私有源码仓库的 `android/keystore/`，所有版本签名一致。**不要把源码仓库改为公开。** 也可以改用 Secrets（`ANDROID_KEYSTORE_BASE64` 等 4 项，配置后优先使用）。
 
 更多细节见 [docs/ANDROID-TV.md](docs/ANDROID-TV.md)。

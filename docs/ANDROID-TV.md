@@ -29,7 +29,7 @@ AI：联网时用在线 AI（与网页版同一服务，象棋为 Pikafish）；
 
 ## 发布与在线更新
 
-- 推送到 `main` → GitHub Actions（`.github/workflows/android-tv.yml`）跑规则单元测试、构建签名 APK，发布到公开仓库 `wxz52155/nanpo-xiangqi` 的 Releases（版本号 `2.0.<运行编号>`，附更新记录与 `update.json`）。发布需要源码仓库 Secret `RELEASE_TOKEN`；没配置时先发布到源码仓库。
+- 推送到 `main` → GitHub Actions（`.github/workflows/android-tv.yml`）跑规则单元测试、构建签名 APK，发布到本仓库 Releases（版本号 `2.0.<运行编号>`，附更新记录与 `update.json`）。
 - 应用启动后自动读取 `update.json`（经 `https://gh-proxy.org/` 加速），发现更高的 versionCode 就弹出“发现新版本”，显示更新内容，可一键下载（显示进度、校验 SHA-256）并调起系统安装。设置页显示当前版本并可手动检查。Android 8 以上首次安装需在系统里允许“南坡象棋”安装应用。
 - 签名证书保存在私有源码仓库 `android/keystore/`，所有版本签名一致可覆盖安装；也可用 Secrets `ANDROID_KEYSTORE_BASE64` 等 4 项覆盖。
 - 手动运行 “Android TV dev preview”：编译 + 单测 + 用 Paparazzi 渲染各界面截图，放在 `dev-preview` 预发布里，方便不装机检查界面。
