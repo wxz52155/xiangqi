@@ -132,7 +132,7 @@ fun FocusCard(
     ) {
         Column(
             Modifier
-                .then(if (container != null) Modifier.background(container) else Modifier)
+                .then(if (container != null) Modifier.fillMaxSize().background(container) else Modifier)
                 .padding(contentPadding),
             content = content,
         )

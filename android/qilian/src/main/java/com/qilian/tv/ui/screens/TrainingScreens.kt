@@ -103,7 +103,7 @@ fun TrainingHubScreen(nav: NavHostController) {
             TrainingKind.entries.forEach { kind ->
                 val last = store.lastTraining(kind)
                 if (last != null) {
-                    TvButton("${kind.label} · 接着练", { nav.navigate(Routes.trainPlay(kind, last)) }, seal = kind.label.take(1), compact = true)
+                    TvButton("${kind.label} · 接着练", { nav.navigate(Routes.trainPlay(kind, last)) }, seal = kindSeal(kind), compact = true)
                 }
             }
             if (TrainingKind.entries.all { store.lastTraining(it) == null }) {
@@ -284,7 +284,7 @@ fun TrainingPlayContent(nav: NavHostController, kind: TrainingKind, current: Tra
         Spacer(Modifier.width(28.dp))
         Column(Modifier.width(380.dp).fillMaxHeight(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Seal(kind.label.take(1), size = 30.dp, background = when (kind) {
+                Seal(kindSeal(kind), size = 30.dp, background = when (kind) {
                     TrainingKind.TACTICS -> Palette.Cinnabar
                     TrainingKind.ENDGAME -> Palette.Jade
                     TrainingKind.OPENING -> Palette.GoldDeep

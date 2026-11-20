@@ -224,6 +224,7 @@ private fun PlayerLine(label: String, dot: Color, active: Boolean) {
         Canvas(Modifier.width(26.dp).height(26.dp)) {
             drawCircle(Color.Black.copy(alpha = 0.3f), size.minDimension / 2f, center + Offset(0f, 2f))
             drawCircle(dot, size.minDimension / 2f)
+            drawCircle(Palette.IvoryMuted.copy(alpha = 0.6f), size.minDimension / 2f, style = Stroke(2f))
             if (active) drawCircle(Palette.Gold, size.minDimension / 2f + 3f, style = Stroke(3f))
         }
         Spacer(Modifier.width(12.dp))

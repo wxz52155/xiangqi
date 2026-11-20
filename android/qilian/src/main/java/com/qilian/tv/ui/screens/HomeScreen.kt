@@ -158,6 +158,12 @@ fun HomeScreen(nav: NavHostController) {
     }
 }
 
+internal fun kindSeal(kind: TrainingKind) = when (kind) {
+    TrainingKind.TACTICS -> "杀"
+    TrainingKind.ENDGAME -> "残"
+    TrainingKind.OPENING -> "开"
+}
+
 internal data class OtherGame(val title: String, val seal: String, val body: String, val accent: Color, val route: String)
 
 internal val OTHER_GAMES = listOf(
@@ -178,7 +184,7 @@ private fun Hero(
     Box(
         Modifier
             .fillMaxWidth()
-            .height(318.dp),
+            .height(372.dp),
     ) {
         // 右侧装饰棋盘
         val board = remember(current) {
@@ -196,10 +202,10 @@ private fun Hero(
         Box(
             Modifier
                 .align(Alignment.CenterEnd)
-                .offset(x = 40.dp, y = 10.dp)
-                .size(420.dp)
-                .rotate(-8f)
-                .alpha(0.92f),
+                .offset(x = (-20).dp, y = 6.dp)
+                .size(340.dp)
+                .rotate(-6f)
+                .alpha(0.95f),
         ) {
             MiniBoard(board, Modifier.fillMaxSize())
         }
@@ -207,9 +213,9 @@ private fun Hero(
         Canvas(Modifier.fillMaxSize()) {
             drawRect(
                 Brush.horizontalGradient(
-                    0.0f to Palette.Night.copy(alpha = 0.96f),
-                    0.52f to Palette.Night.copy(alpha = 0.82f),
-                    0.78f to Palette.Night.copy(alpha = 0.15f),
+                    0.0f to Palette.Night.copy(alpha = 0.9f),
+                    0.5f to Palette.Night.copy(alpha = 0.55f),
+                    0.66f to Color.Transparent,
                     1.0f to Color.Transparent,
                 ),
             )
@@ -218,7 +224,7 @@ private fun Hero(
         Column(
             Modifier
                 .fillMaxHeight()
-                .padding(start = 48.dp, top = 36.dp),
+                .padding(start = 48.dp, top = 30.dp),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Seal("棋", size = 30.dp)
@@ -291,7 +297,7 @@ internal fun TrainingKindCard(kind: TrainingKind, total: Int, done: Int, wide: B
     }
     FocusCard(
         onClick = onClick,
-        modifier = Modifier.width(if (wide) 268.dp else 290.dp).height(if (wide) 250.dp else 168.dp),
+        modifier = Modifier.width(if (wide) 268.dp else 290.dp).height(if (wide) 214.dp else 168.dp),
         container = Brush.linearGradient(listOf(Palette.InkCard, accent.copy(alpha = 0.22f))),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -305,6 +311,13 @@ internal fun TrainingKindCard(kind: TrainingKind, total: Int, done: Int, wide: B
         Spacer(Modifier.height(10.dp))
         Text(blurb, style = Type.Small.copy(color = Palette.IvoryMuted), maxLines = if (wide) 4 else 2)
         Spacer(Modifier.weight(1f))
+        if (wide) {
+            Row(verticalAlignment = Alignment.Bottom) {
+                Text(if (total > 0) "${done * 100 / total}" else "0", style = Type.Headline.copy(fontSize = 34.sp, color = accent))
+                Text(" %", style = Type.Small)
+            }
+            Spacer(Modifier.height(6.dp))
+        }
         Row(verticalAlignment = Alignment.CenterVertically) {
             ProgressBar(if (total > 0) done.toFloat() / total else 0f, Modifier.weight(1f), accent)
             Spacer(Modifier.width(10.dp))

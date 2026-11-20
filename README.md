@@ -6,7 +6,7 @@
 
 **[开始下棋 →](https://chuccp.github.io/chess-train/)** · **[其它棋类 →](https://chuccp.github.io/chess-train/local)**
 
-> 📺 **Android TV 版**：全部功能可用遥控器操作，电视大屏布局。每次推送 `main` 自动构建 APK 并发布到 **Releases**（附更新记录）。说明见 [docs/ANDROID-TV.md](docs/ANDROID-TV.md)。
+> 📺 **Android TV 原生版**：Kotlin + Compose for TV 编写的电视应用，遥控器操作、电视大屏界面。每次推送 `main` 自动构建 APK 并发布到 **Releases**（附更新记录）。说明见 [docs/ANDROID-TV.md](docs/ANDROID-TV.md)。
 
 ![棋练首页](docs/screenshots/home-desktop.jpg)
 
