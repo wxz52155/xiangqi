@@ -190,7 +190,7 @@ fun AboutScreen(nav: NavHostController) {
             )
             AboutBlock(
                 "许可",
-                "南坡象棋与原项目一样以 GPL-3.0 发布源代码；Pikafish 代码 GPL-3.0，NNUE 权重遵循 Pikafish NNUE-License（免费、非商业）。本版本免费、非商业，不含广告或付费内容。",
+                "语音播报由开源中文语音模型 Kokoro-82M-v1.1-zh（Apache-2.0）合成。南坡象棋与原项目一样以 GPL-3.0 发布源代码；Pikafish 代码 GPL-3.0，NNUE 权重遵循 Pikafish NNUE-License（免费、非商业）。本版本免费、非商业，不含广告或付费内容。",
             )
         }
         Spacer(Modifier.width(40.dp))
