@@ -21,6 +21,8 @@ import { clearAllLocalData } from '../lib/storage';
 import { clearFavorites } from '../lib/favorites';
 import { formatBytes } from '../lib/format';
 import type { Level } from '../types';
+import { confirmAction } from '../tv/overlays';
+import { IS_TV } from '../tv/env';
 
 export function SettingsPage() {
   const engine = useEngineStore();
@@ -46,7 +48,7 @@ export function SettingsPage() {
   }
 
   async function clearData() {
-    if (!window.confirm('清除本机所有棋谱、训练进度、自定义残局、收藏和设置？此操作不可恢复。')) return;
+    if (!(await confirmAction('清除本机所有棋谱、训练进度、自定义残局、收藏和设置？此操作不可恢复。', { confirmLabel: '清除' }))) return;
     setBusy('data');
     await clearAllLocalData();
     clearFavorites();
@@ -119,7 +121,7 @@ export function SettingsPage() {
             <div className="settings-row">
               <div>
                 <strong>落子反馈</strong>
-                <p>轻量音效与触感，移动端会跟随系统设置。</p>
+                <p>{IS_TV ? '轻量落子音效，跟随电视音量。' : '轻量音效与触感，移动端会跟随系统设置。'}</p>
               </div>
               <div className="toggle-group">
                 <button
@@ -131,15 +133,18 @@ export function SettingsPage() {
                   <Volume2 size={16} aria-hidden="true" />
                   音效 {settings.sound ? '开' : '关'}
                 </button>
-                <button
-                  type="button"
-                  className={`toggle${settings.haptics ? ' is-on' : ''}`}
-                  onClick={() => settings.setHaptics(!settings.haptics)}
-                  aria-pressed={settings.haptics}
-                >
-                  <Vibrate size={16} aria-hidden="true" />
-                  震动 {settings.haptics ? '开' : '关'}
-                </button>
+                {/* 电视没有震动马达，TV 版不显示震动开关 */}
+                {!IS_TV && (
+                  <button
+                    type="button"
+                    className={`toggle${settings.haptics ? ' is-on' : ''}`}
+                    onClick={() => settings.setHaptics(!settings.haptics)}
+                    aria-pressed={settings.haptics}
+                  >
+                    <Vibrate size={16} aria-hidden="true" />
+                    震动 {settings.haptics ? '开' : '关'}
+                  </button>
+                )}
               </div>
             </div>
             <div className="settings-row">

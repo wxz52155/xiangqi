@@ -19,6 +19,7 @@ import { gomokuPosition, gridPositionKey, prunePlacementBans, requestGridMove } 
 import { useAiTurn } from '../lib/useAiTurn';
 import { formatDuration } from '../lib/format';
 import { useSettingsStore } from '../stores/settings';
+import { IS_TV } from '../tv/env';
 
 type DialogAction = 'new' | 'resign' | null;
 type AiReply = { index?: number; from?: number; to?: number };
@@ -315,7 +316,7 @@ export function GomokuPage() {
             )}
           </div>
 
-          <p className="board-help">点击空交叉点落子；横、竖、斜任意方向先连成五子即胜。</p>
+          <p className="board-help">{IS_TV ? '方向键移到空交叉点，按 OK 落子；' : '点击空交叉点落子；'}横、竖、斜任意方向先连成五子即胜。</p>
         </section>
 
         <aside className="play-side">

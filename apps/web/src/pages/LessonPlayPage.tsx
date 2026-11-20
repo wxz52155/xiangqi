@@ -46,6 +46,7 @@ import { playCue, vibrate } from '../lib/feedback';
 import { chooseTrainingDefense } from '../lib/trainingOpponent';
 import { useSettingsStore } from '../stores/settings';
 import type { TrainingProgress } from '../types';
+import { IS_TV } from '../tv/env';
 
 interface LessonPlayPageProps {
   kind: 'endgame' | 'opening';
@@ -66,7 +67,9 @@ interface LessonUndoPoint {
 }
 
 const OPENING_DEVIATION_MESSAGE =
-  '这步不在主线。可以悔棋后点击提示获取下一步；继续走棋将进入自由对弈。';
+  IS_TV
+  ? '这步不在主线。可以悔棋后选「提示」获取下一步；继续走棋将进入自由对弈。'
+  : '这步不在主线。可以悔棋后点击提示获取下一步；继续走棋将进入自由对弈。';
 const OPENING_FREE_MODE_MESSAGE =
   '已进入自由对弈模式，后续按人机对弈方式继续。';
 const OPENING_DEMO_DELAY_MS = 1200;

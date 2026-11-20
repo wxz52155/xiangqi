@@ -15,3 +15,4 @@ tmp-*.png
 /.pnpm-store
 /.idea
 apps/web/dist-pages/
+apps/web/dist-tv/

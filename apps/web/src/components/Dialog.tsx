@@ -17,7 +17,11 @@ export function Dialog({ open, title, children, footer, onClose, className = '' 
   useEffect(() => {
     const dialog = ref.current;
     if (!dialog) return;
-    if (open && !dialog.open) dialog.showModal();
+    if (open && !dialog.open) {
+      dialog.showModal();
+      // 遥控器：默认焦点放在标记的按钮上（例如“取消”“知道了”），而不是第一个可聚焦元素。
+      dialog.querySelector<HTMLElement>('[data-tv-autofocus]')?.focus();
+    }
     if (!open && dialog.open) dialog.close();
   }, [open]);
 

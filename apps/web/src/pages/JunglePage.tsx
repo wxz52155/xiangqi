@@ -24,6 +24,7 @@ import { gridPositionKey, junglePosition, requestGridMove } from '../engine/adap
 import { useAiTurn } from '../lib/useAiTurn';
 import { formatDuration } from '../lib/format';
 import { useSettingsStore } from '../stores/settings';
+import { IS_TV } from '../tv/env';
 
 type DialogAction = 'new' | 'resign' | null;
 type AiReply = { index?: number; from?: number; to?: number };
@@ -407,7 +408,7 @@ export function JunglePage() {
           </div>
 
           <p className="board-help">
-            点击自己的兽棋，再点亮的格子落子或吃子；狮、虎可以跳过小河。
+            {IS_TV ? '方向键移到自己的兽棋按 OK 选中，再到亮起的格子按 OK 落子或吃子；狮、虎可以跳过小河。' : '点击自己的兽棋，再点亮的格子落子或吃子；狮、虎可以跳过小河。'}
           </p>
         </section>
 

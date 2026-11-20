@@ -8,6 +8,7 @@ import {
   ShieldCheck,
   WifiOff,
 } from 'lucide-react';
+import { IS_TV } from '../tv/env';
 
 const external = { target: '_blank', rel: 'noreferrer noopener' } as const;
 const baseUrl = import.meta.env.BASE_URL;
@@ -95,8 +96,7 @@ export function AboutPage() {
             <h2>不收集棋谱</h2>
             <p>
               没有账号系统，也没有上传棋谱或训练记录的接口。AI 走子请求只携带当前局面（不含对局历史）。
-              页面接入百度统计用于访问量统计，可能收集访问设备与页面信息；棋谱、训练进度和设置仍然只保存在当前浏览器。
-              清除站点数据会删除它们。
+              {IS_TV ? '电视版不接入任何统计；棋谱、训练进度和设置只保存在这台电视里，卸载或清除应用数据会一并删除。' : '页面接入百度统计用于访问量统计，可能收集访问设备与页面信息；棋谱、训练进度和设置仍然只保存在当前浏览器。清除站点数据会删除它们。'}
             </p>
           </div>
         </section>

@@ -3,11 +3,23 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 const base = (process.env.VITE_BASE_PATH || '/').replace(/\/?$/, '/');
+// VITE_TARGET=tv：Android TV APK 内置的网页包。电视盒子的 WebView 往往较旧，语法降级到 Chrome 80。
+const isTv = process.env.VITE_TARGET === 'tv';
 
 export default defineConfig({
   base,
   plugins: [
     react(),
+    // TV 版：页面按 1280 宽排版，由 WebView 整体缩放到电视分辨率。
+    isTv && {
+      name: 'qilian-tv-viewport',
+      transformIndexHtml(html: string) {
+        return html.replace(
+          /<meta\s+name="viewport"[\s\S]*?\/>/,
+          '<meta name="viewport" content="width=1280, user-scalable=no" />',
+        );
+      },
+    },
     VitePWA({
       strategies: 'injectManifest',
       srcDir: 'src',
@@ -52,7 +64,8 @@ export default defineConfig({
   },
   build: {
     outDir: process.env.VITE_OUT_DIR || 'dist',
-    target: 'es2022',
+    target: isTv ? ['chrome80'] : 'es2022',
+    cssTarget: isTv ? ['chrome80'] : undefined,
     chunkSizeWarningLimit: 800,
   },
 });

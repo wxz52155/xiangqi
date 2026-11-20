@@ -6,6 +6,7 @@ import { listTrainingProgress } from '../lib/storage';
 import { favoriteKey, useFavorites } from '../lib/favorites';
 import { randomTrainingPath } from '../lib/randomTraining';
 import type { TrainingProgress } from '../types';
+import { IS_TV } from '../tv/env';
 
 export function LessonListPage({ kind }: { kind: 'endgame' | 'opening' }) {
   const navigate = useNavigate();
@@ -153,7 +154,7 @@ export function LessonListPage({ kind }: { kind: 'endgame' | 'opening' }) {
           <p>
             {favOnly
               ? favoriteCount === 0
-                ? '打开一节课程，点右上角「收藏」，就能在这里专项练习。'
+                ? (IS_TV ? '打开一节课程，选中右上角「收藏」按 OK，就能在这里专项练习。' : '打开一节课程，点右上角「收藏」，就能在这里专项练习。')
                 : '可以调整难度筛选，或换一个搜索词。'
               : '可以换一个标题、来源或标签再试。'}
           </p>

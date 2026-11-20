@@ -33,10 +33,13 @@ import { useGameStore, levelLabel, resultLabel } from '../stores/game';
 import { useSettingsStore } from '../stores/settings';
 import { formatDuration } from '../lib/format';
 import type { GameMode, Level } from '../types';
+import { IS_TV } from '../tv/env';
 
 type DialogAction = 'resign' | 'new' | null;
 
-const MOVE_TIPS = '点击棋子，再点目标位置；也可用 Tab 聚焦棋格、方向键移动、回车落子。';
+const MOVE_TIPS = IS_TV
+  ? '方向键移动棋盘上的光标，按 OK 选中棋子，再到目标位置按 OK 落子；按左右键走出棋盘边缘可到操作按钮。'
+  : '点击棋子，再点目标位置；也可用 Tab 聚焦棋格、方向键移动、回车落子。';
 
 function ComicTip({
   id,

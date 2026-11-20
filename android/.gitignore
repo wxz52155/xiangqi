@@ -1,0 +1,14 @@
+.gradle/
+build/
+app/build/
+local.properties
+*.iml
+.idea/
+captures/
+# 网页包由 CI 构建后复制进来
+app/src/main/assets/web/
+
+# 签名证书不进仓库：CI 从 Secrets 读取；本地构建时把 qilian-tv.jks 和 keystore.properties 放到 keystore/ 目录
+keystore/*.jks
+keystore/*.keystore
+keystore/keystore.properties

@@ -21,6 +21,7 @@ import { checkersPosition, gridPositionKey, requestGridMove } from '../engine/ad
 import { useAiTurn } from '../lib/useAiTurn';
 import { formatDuration } from '../lib/format';
 import { useSettingsStore } from '../stores/settings';
+import { IS_TV } from '../tv/env';
 
 type DialogAction = 'new' | 'resign' | null;
 type AiReply = { index?: number; from?: number; to?: number };
@@ -358,7 +359,7 @@ export function CheckersPage() {
           </div>
 
           <p className="board-help">
-            点击自己的棋子，再点空孔走一步或跳过相邻棋子；可以连续跳。
+            {IS_TV ? '方向键移到自己的棋子按 OK 选中，再移到空孔按 OK 走一步或跳过相邻棋子；可以连续跳。' : '点击自己的棋子，再点空孔走一步或跳过相邻棋子；可以连续跳。'}
           </p>
         </section>
 

@@ -6,6 +6,7 @@ import { listTrainingProgress } from '../lib/storage';
 import { favoriteKey, useFavorites } from '../lib/favorites';
 import { randomTrainingPath } from '../lib/randomTraining';
 import type { TrainingProgress } from '../types';
+import { IS_TV } from '../tv/env';
 
 export function TacticsListPage() {
   const navigate = useNavigate();
@@ -147,7 +148,7 @@ export function TacticsListPage() {
             {query.trim()
               ? '可以换一个标题、来源或标签再试。'
               : filter === 'fav'
-                ? '打开一道题，点右上角「收藏」，就能在这里专项练习。'
+                ? (IS_TV ? '打开一道题，选中右上角「收藏」按 OK，就能在这里专项练习。' : '打开一道题，点右上角「收藏」，就能在这里专项练习。')
                 : filter === 'done'
                   ? '先做几道题，完成记录会出现在这里。'
                   : '可以切换筛选，或重新练一遍。'}

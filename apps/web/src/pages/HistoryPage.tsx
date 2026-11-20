@@ -5,6 +5,7 @@ import { deleteFinishedGame, listFinishedGames } from '../lib/storage';
 import { formatDate, formatDuration } from '../lib/format';
 import { levelLabel, resultLabel } from '../stores/game';
 import type { FinishedGame } from '../types';
+import { confirmAction } from '../tv/overlays';
 
 export function HistoryPage() {
   const [games, setGames] = useState<FinishedGame[]>([]);
@@ -24,7 +25,7 @@ export function HistoryPage() {
   }, []);
 
   async function remove(id: string) {
-    if (!window.confirm('删除这局棋谱？此操作不可恢复。')) return;
+    if (!(await confirmAction('删除这局棋谱？此操作不可恢复。', { confirmLabel: '删除' }))) return;
     setDeleting(id);
     await deleteFinishedGame(id);
     setGames((items) => items.filter((game) => game.id !== id));
